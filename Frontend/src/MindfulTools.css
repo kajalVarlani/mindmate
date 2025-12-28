@@ -1,0 +1,132 @@
+/* --- Global Tools Wrapper --- */
+.tools-page-wrapper {
+  background: var(--bg-gradient);
+  color: var(--text);
+  min-height: 100vh;
+  padding-top: 60px; /* Reduced from 100px */
+}
+
+.tools-container {
+  max-width: 1000px; /* Slightly narrower for better focus */
+  margin: 0 auto;
+  padding: 40px 5%; /* Reduced top padding */
+}
+
+/* --- Header Styling --- */
+.tools-header {
+  text-align: center;
+  margin-bottom: 50px; /* Reduced from 70px */
+}
+
+.tools-header h1 {
+  font-size: 2.8rem; /* Slightly smaller for polish */
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.tools-subtext {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* --- Tools Grid (Fixed to 1 Row) --- */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Forces 3 columns in one row */
+  gap: 25px;
+  margin-top: 20px;
+}
+
+/* --- Card Polishing --- */
+.tool-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(106, 191, 143, 0.1);
+  border-radius: 24px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content */
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+}
+
+.tool-icon-box {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  background: rgba(106, 191, 143, 0.1);
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+}
+
+.tool-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.tool-card p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-light);
+  margin-bottom: 20px;
+  min-height: 60px; /* Keeps cards uniform */
+}
+
+/* --- Active vs Hover States --- */
+.active-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent);
+  background: rgba(106, 191, 143, 0.08);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.tool-status {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* --- Tool Viewer Styles --- */
+.tool-viewer-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.back-tools-btn {
+  background: transparent;
+  border: 1px solid rgba(106, 191, 143, 0.3);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-bottom: 30px;
+  transition: 0.3s;
+}
+
+.back-tools-btn:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+/* --- Responsive Layout --- */
+@media (max-width: 900px) {
+  .tools-grid {
+    grid-template-columns: 1fr; /* Stacks on mobile */
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .tools-header h1 {
+    font-size: 2.2rem;
+  }
+}

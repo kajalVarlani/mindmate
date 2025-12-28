@@ -1,0 +1,402 @@
+/* =====================================================
+   CHAT.CSS - MESSAGE BUBBLES & CHAT DISPLAY
+   ===================================================== */
+
+:root {
+  --bg: #0a0f0d;
+  --panel: rgba(255, 255, 255, 0.05);
+  --panel-hover: rgba(255, 255, 255, 0.08);
+  --muted: #8b9d95;
+  --text: #e8f1ed;
+  --text-light: #b4cdc0;
+  --accent: #6abf8f;
+  --accent-hover: #58b07f;
+  --accent-2: #7eb8d4;
+  --accent-glow: rgba(106, 191, 143, 0.3);
+  
+  --shadow-sm: 0 2px 16px rgba(106, 191, 143, 0.1);
+  --shadow-md: 0 8px 32px rgba(106, 191, 143, 0.15);
+  
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-bubble: 20px;
+  --radius-lg: 28px;
+  
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Chat container */
+.chats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Welcome section - sticky header */
+.welcomeSection {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  padding-bottom: 1.25rem;
+  z-index: 5;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Welcoming heading with gradient */
+.welcomeHeading {
+  margin: 0 0 0.75rem 0;
+  font-size: 36px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  animation: slideInLeft 0.6s ease-out;
+  text-align: center;
+  color: var(--accent);
+  padding: 2rem;
+}
+
+
+
+
+/* Empty state with floating animation */
+.emptyState {
+  font-size: 17px;
+  text-align: center;
+  line-height: 1.8;
+  padding: 2rem;
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(106, 191, 143, 0.15);
+  position: relative;
+  overflow: hidden;
+  color: var(--text-light);
+
+}
+
+.emptyState p{
+    color: whitesmoke;
+}
+
+/* Animated gradient border */
+.emptyState::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Floating plant emoji */
+.emptyState::after {
+  content: '🌱';
+  display: block;
+  font-size: 64px;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 0 20px var(--accent-glow));
+}
+
+
+
+/* Message wrappers with animations */
+.gptWrap {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.userWrap {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Message bubbles - glassmorphic design */
+.gptMessage,
+.userMessage {
+  max-width: 70%;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  line-height: 1.7;
+  font-size: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  color: var(--text);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.gptMessage:hover,
+.userMessage:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 8px 32px rgba(106, 191, 143, 0.25);
+}
+
+/* AI message - green accent */
+.gptMessage {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-light);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  max-width: 70%;
+  border-left: 3px solid var(--accent);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 0 1px rgba(106, 191, 143, 0.3);
+}
+
+/* Subtle glow effect */
+.gptMessage::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  border-radius: 4px 0 0 4px;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* User message - blue accent */
+.userMessage {
+  background: var(--accent);
+  color: var(--text-dark);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  max-width: 70%;
+  border-right: 4px solid var(--accent-2);
+  border-top-right-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 0 1px rgba(126, 184, 212, 0.3);
+}
+
+.userMessage::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 10px rgba(126, 184, 212, 0.4);
+}
+
+/* Highlighted tip badge */
+.tip {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgba(106, 191, 143, 0.3), 0 0 20px var(--accent-glow);
+  margin: 0.25rem;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.tip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.tip:hover::before {
+  left: 100%;
+}
+
+.tip:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 16px rgba(106, 191, 143, 0.5), 0 0 30px var(--accent-glow);
+}
+
+/* Loading indicator */
+.loaderWrapper {
+  opacity: 1;
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Divider with glow */
+.mutedLine {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(106, 191, 143, 0.3), transparent);
+  margin: 1rem 0;
+  box-shadow: 0 0 10px var(--accent-glow);
+  position: relative;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Code blocks with enhanced styling */
+pre,
+code {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: rgba(106, 191, 143, 0.1);
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 14px;
+  border: 1px solid rgba(106, 191, 143, 0.2);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+pre {
+  padding: 1.25rem;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Scrollbar for code blocks */
+pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+  background: rgba(106, 191, 143, 0.05);
+  border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+
+/* Focus states for accessibility */
+.gptMessage:focus,
+.userMessage:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+/* Responsive design */
+@media (max-width: 800px) {
+  .chats {
+    gap: 1.5rem;
+  }
+  
+  .gptMessage,
+  .userMessage {
+    max-width: 85%;
+    font-size: 14px;
+    padding: 1rem 1.25rem;
+  }
+  
+  .welcomeHeading {
+    font-size: 28px;
+  }
+  
+  .emptyState {
+    padding: 2rem;
+    font-size: 16px;
+  }
+  
+  .emptyState::after {
+    font-size: 52px;
+  }
+  
+  pre,
+  code {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcomeHeading {
+    font-size: 24px;
+  }
+  
+  .gptMessage,
+  .userMessage {
+    max-width: 90%;
+    padding: 0.85rem 1rem;
+  }
+}
+/* Update these in Chat.css */
+.gptWrap {
+    justify-content: flex-start;
+    margin-bottom: 25px;
+}
+
+.gptMessage {
+    background: rgba(106, 191, 143, 0.08); /* Soft Emerald Tint */
+    border: 1px solid rgba(106, 191, 143, 0.2);
+    border-radius: 4px 22px 22px 22px; /* Soulmate bubble style */
+    padding: 18px 22px;
+    line-height: 1.6;
+    color: var(--text);
+    max-width: 85%;
+}
+
+.userWrap {
+    justify-content: flex-end;
+    margin-bottom: 25px;
+}
+
+.userMessage {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 500;
+    border-radius: 22px 22px 4px 22px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}

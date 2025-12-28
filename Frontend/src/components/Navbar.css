@@ -1,0 +1,135 @@
+/* Floating Glass Navbar Wrapper */
+.glass-nav-wrapper {
+  position: fixed;
+  top: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+  padding: 0 20px;
+}
+
+.glass-navbar {
+  width: 100%;
+  max-width: 1100px;
+  height: 65px;
+  /* Matching Landing Page Background Blur */
+  background: rgba(10, 15, 13, 0.8); 
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  /* Matching Landing Page Emerald Border */
+  border: 1px solid rgba(106, 191, 143, 0.2); 
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 25px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Brand Section */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.nav-logo-img {
+  height: 32px;
+  width: auto;
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+
+.nav-brand-text {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #ffffff; /* Explicitly White */
+  letter-spacing: -0.5px;
+}
+
+/* Center Links - Fixing the "Boring" text */
+.nav-center {
+  display: flex;
+  gap: 25px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: var(--text-light); /* Matching Landing Page Muted Text */
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Right Section Actions */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Specialized Pill Button to match Landing Page primary-btn */
+.journal-pill {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(106, 191, 143, 0.2);
+}
+
+.journal-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px var(--accent-glow);
+  background: var(--accent-hover);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 850px) {
+  .nav-center {
+    display: none; /* Hide middle links on mobile for cleaner look */
+  }
+  
+  .glass-navbar {
+    max-width: 95%;
+    padding: 0 15px;
+  }
+
+  .nav-brand-text {
+    font-size: 1rem;
+  }
+}
+/* Style for the current active page link */
+.nav-item.active {
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent-glow);
+    font-weight: 700;
+}
+
+/* Ensure the Logout button aligns with your glass theme */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Tweak for logged-in center links on smaller screens */
+@media (max-width: 950px) {
+    .nav-center {
+        gap: 15px;
+    }
+    .nav-item {
+        font-size: 0.85rem;
+    }
+}

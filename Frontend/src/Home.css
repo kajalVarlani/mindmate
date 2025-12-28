@@ -1,0 +1,114 @@
+.home-dashboard {
+  min-height: 100vh;
+  background: var(--bg-gradient);
+  color: var(--text);
+  padding-top: 100px; /* Space for Navbar */
+}
+
+.dashboard-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 5%;
+}
+
+.welcome-header {
+  margin-bottom: 50px;
+}
+
+.date-pill {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.welcome-header h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+/* --- Action Cards --- */
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.action-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(106, 191, 143, 0.1);
+  border-radius: 24px;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-card:hover {
+  background: rgba(106, 191, 143, 0.05);
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.main-action {
+  background: rgba(106, 191, 143, 0.05);
+  border: 1px solid rgba(106, 191, 143, 0.2);
+}
+
+.action-icon {
+  font-size: 2.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+}
+
+.action-info h3 {
+  font-size: 1.4rem;
+  margin-bottom: 5px;
+  color: var(--text);
+}
+
+.action-info p {
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+.secondary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* --- Quote Box --- */
+.daily-quote {
+  margin-top: 60px;
+  text-align: center;
+}
+
+.quote-box {
+  padding: 30px;
+  border-top: 1px solid rgba(106, 191, 143, 0.1);
+  color: var(--muted);
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+/* Mobile Fixes */
+@media (max-width: 600px) {
+  .secondary-grid {
+    grid-template-columns: 1fr;
+  }
+  .welcome-header h1 {
+    font-size: 2.2rem;
+  }
+}

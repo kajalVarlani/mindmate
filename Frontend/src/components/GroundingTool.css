@@ -1,0 +1,133 @@
+.grounding-tool {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.step-header {
+  text-align: center;
+}
+
+.step-count {
+  color: var(--accent);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.sense-title {
+  font-size: 2.2rem;
+  margin: 10px 0;
+  color: var(--text);
+}
+
+.sense-instruction {
+  color: var(--text-light);
+  opacity: 0.8;
+}
+
+/* --- Input Grid --- */
+.grounding-input-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(106, 191, 143, 0.1);
+  border-radius: 16px;
+  padding: 5px 20px;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--accent);
+  background: rgba(106, 191, 143, 0.06);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.input-number {
+  font-weight: 800;
+  color: var(--accent);
+  opacity: 0.4;
+  margin-right: 15px;
+  font-size: 1.2rem;
+}
+
+.grounding-slot {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 15px 0;
+  color: var(--text);
+  font-size: 1.1rem;
+  outline: none;
+}
+
+.grounding-slot::placeholder {
+  color: var(--muted);
+  opacity: 0.3;
+}
+
+/* --- Navigation & Progress --- */
+.tool-footer {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
+}
+
+.progress-container {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.next-btn {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  padding: 16px 60px;
+  border-radius: 100px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.next-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.next-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px var(--accent-glow);
+}
+
+/* Finished State Animation */
+.grounding-finished {
+  text-align: center;
+  padding: 40px;
+}
+
+.glow-icon {
+  font-size: 5rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 20px var(--accent-glow));
+}
