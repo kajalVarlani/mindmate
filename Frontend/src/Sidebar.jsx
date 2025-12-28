@@ -9,7 +9,7 @@ function Sidebar() {
     const changeThread = async (newThreadId) => {
         setCurrThreadId(newThreadId);
         try {
-            const response = await fetch(`http://localhost:8080/api/thread/${newThreadId}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/thread/${newThreadId}`);
             const res = await response.json();
             setPrevChats(res);
             setNewChat(false);
@@ -24,7 +24,7 @@ function Sidebar() {
         if (!window.confirm("Delete this conversation?")) return;
 
         try {
-            await fetch(`http://localhost:8080/api/thread/${threadId}`, { method: 'DELETE' });
+            await fetch(`${import.meta.env.VITE_API_URL}/api/thread/${threadId}`, { method: 'DELETE' });
             setAllThreads(prev => prev.filter(t => t.threadId !== threadId));
             if (currThreadId === threadId) {
                 setNewChat(true);
