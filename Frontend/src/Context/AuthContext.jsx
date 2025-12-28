@@ -4,52 +4,49 @@ import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState(localStorage.getItem("token"));
-    // Initial load pe seedha local storage se uthao
-    const [userName, setUserName] = useState(localStorage.getItem("uName") || "Friend");
+  const [token, setToken] = useState(null);
+  const [userName, setUserName] = useState("Friend");
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                // Agar token mein name hai toh wahan se update karo
-                const nameFromToken = decoded.name || decoded.fullName;
-                if (nameFromToken) {
-                    setUserName(nameFromToken);
-                    localStorage.setItem("uName", nameFromToken);
-                }
-            } catch (error) {
-                console.error("Token decoding failed", error);
-            }
-        }
-    }, [token]);
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    const storedName = localStorage.getItem("uName");
 
-    // LOGIN FUNCTION FIX
-    const login = (newToken, nameFromApi) => {
-        // 1. Token save karo
-        localStorage.setItem("token", newToken);
-        setToken(newToken);
+    if (storedToken) {
+      setToken(storedToken);
+      setUserName(storedName || "Friend");
+    }
 
-        // 2. Name save karo (Jo Login.jsx se aa raha hai)
-        if (nameFromApi) {
-            localStorage.setItem("uName", nameFromApi);
-            setUserName(nameFromApi);
-            console.log("Name saved to storage:", nameFromApi);
-        }
-    };
+    setLoading(false); // 👈 IMPORTANT
+  }, []);
 
-    const logout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("uName");
-        setToken(null);
-        setUserName("Friend");
-    };
+  const login = (newToken, nameFromApi) => {
+    localStorage.setItem("token", newToken);
+    localStorage.setItem("uName", nameFromApi);
 
-    return (
-        <AuthContext.Provider value={{ isAuthenticated: !!token, userName, login, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+    setToken(newToken);
+    setUserName(nameFromApi);
+  };
+
+  const logout = () => {
+    localStorage.clear();
+    setToken(null);
+    setUserName("Friend");
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated: !!token,
+        userName,
+        login,
+        logout,
+        loading
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);

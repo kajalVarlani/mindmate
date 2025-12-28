@@ -5,14 +5,14 @@ import Footer from "./components/Footer.jsx";
 import Home from "./Home.jsx";
 import { useAuth } from "./Context/AuthContext";
 export default function LandingPage() {
-    const { isAuthenticated } = useAuth(); // React is variable ko "watch" karega
+    const { isAuthenticated, loading } = useAuth();
     const navigate = useNavigate();
-
+    if (loading) return null; 
     if (isAuthenticated) {
         return (
             <div className="landing">
                 <Navbar />
-                <Home /> 
+                <Home />
                 <Footer />
             </div>
         );
@@ -53,21 +53,21 @@ export default function LandingPage() {
                         <div className="icon-box">💬</div>
                         <h3>AI Companion</h3>
                         <p>A non-judgmental companion to talk through heavy emotions, anytime you need.</p>
-                        <button className="card-btn" onClick={() => navigate("/chat")}>Chat Now</button>
+                       
                     </div>
 
                     <div className="feature-card highlighted">
                         <div className="icon-box">🌿</div>
                         <h3>Thought Journal</h3>
                         <p>Release your thoughts in a safe, encrypted digital diary. Track your growth over time.</p>
-                        <button className="card-btn" onClick={() => navigate("/journal")}>Write Entry</button>
+                      
                     </div>
 
                     <div className="feature-card">
                         <div className="icon-box">🧘</div>
                         <h3>Mindful Tools</h3>
                         <p>Simple exercises designed to ground you when life feels a bit too loud.</p>
-                        <button className="card-btn" onClick={() => navigate("/MindfulTools")}>Try Now</button>
+                     
                     </div>
                 </div>
             </section>

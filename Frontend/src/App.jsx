@@ -33,6 +33,8 @@ function App() {
   const [prevChats, setPrevChats] = useState([]);
   const [newChat, setNewChat] = useState(true);
   const [allThreads, setAllThreads] = useState([]);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+
 
   const fetchThreads = async () => {
     try {
@@ -62,7 +64,8 @@ function App() {
     prevChats, setPrevChats,
     newChat, setNewChat,
     allThreads, setAllThreads,
-    fetchThreads
+    fetchThreads,
+    isSidebarOpen, setSidebarOpen
   };
 
   return (

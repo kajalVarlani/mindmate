@@ -11,6 +11,7 @@ function ChatWindow() {
     const { prompt, setPrompt, reply, setReply, currThreadId, prevChats, setPrevChats, newChat, setNewChat } = useContext(MyContext);
     const [loading, setLoading] = useState(false);
     const { fetchThreads } = useContext(MyContext);
+    const { setSidebarOpen } = useContext(MyContext);
     useEffect(() => {
         if (newChat) {
             // CLEAR UI
@@ -71,9 +72,11 @@ function ChatWindow() {
 
             {/* NAVBAR */}
             <div className="navbar">
-                <span className="title"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => navigate("/")}>
+                <button className="hamburger-menu" onClick={() => setSidebarOpen(true)}>
+                    <i className="fa-solid fa-bars-staggered"></i>
+                </button>
+
+                <span className="title">
                     MindMate <i className="fa-solid fa-chevron-down"></i>
                 </span>
 
@@ -89,8 +92,10 @@ function ChatWindow() {
                 <Chat />
 
                 {loading && (
-                    <div className="loaderWrapper">
-                        <BounceLoader color="#4868c8" />
+                    <div className="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
                     </div>
                 )}
             </div>

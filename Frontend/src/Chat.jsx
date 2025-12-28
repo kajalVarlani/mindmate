@@ -13,25 +13,20 @@ function Chat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [prevChats]);
-  useEffect(()=>{
-    if(reply===null){
-      setLatestReply(null);
-      return;
-    }
-    if(!prevChats?.length) return;
+ useEffect(() => {
+    if (reply === null || !prevChats?.length) return;
 
-    const content=reply.split(" ");
+    let currentText = "";
+    let i = 0;
+    const interval = setInterval(() => {
+        currentText += reply[i];
+        setLatestReply(currentText);
+        i++;
+        if (i >= reply.length) clearInterval(interval);
+    }, 15); // Faster & Smoother character typing
 
-    let idx=0;
-    const interval= setInterval(()=>{
-      setLatestReply(content.slice(0,idx+1).join(" "));
-      idx++;
-      if(idx>=content.length) clearInterval(interval);
-    }, 40);
-
-    return ()=>clearInterval(interval);
-
-  },[prevChats,reply]);
+    return () => clearInterval(interval);
+}, [reply]);
 
   return (
     <>

@@ -4,7 +4,10 @@ import { MyContext } from "./MyContext.jsx";
 import { v1 as uuidv1 } from "uuid";
 
 function Sidebar() {
-    const { allThreads, setAllThreads, setCurrThreadId, setNewChat, setPrevChats, setReply, currThreadId } = useContext(MyContext);
+  const { 
+        allThreads, setCurrThreadId, setNewChat, 
+        currThreadId, isSidebarOpen, setSidebarOpen 
+    } = useContext(MyContext);
 
     const changeThread = async (newThreadId) => {
         setCurrThreadId(newThreadId);
@@ -36,8 +39,14 @@ function Sidebar() {
     };
 
     return (
-        <section className="sidebar">
-            <button className="newChatBtn" onClick={() => { setCurrThreadId(uuidv1()); setNewChat(true); }}>
+        <section className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+            
+            {/* Mobile ke liye ek Close Button (X) add karein */}
+            <button className="close-sidebar-mobile" onClick={() => setSidebarOpen(false)}>
+                <i className="fa-solid fa-xmark"></i>
+            </button>
+
+            <button className="newChatBtn" onClick={() => { setCurrThreadId(uuidv1()); setNewChat(true); setSidebarOpen(false); }}>
                 <span className="newChatIcon"><i className="fa-solid fa-plus"></i></span>
                 <span className="newChatText">New Session</span>
             </button>

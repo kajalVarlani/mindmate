@@ -349,3 +349,43 @@
     transform: scale(1.1);
 }
 
+
+/* Mobile View Fix */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -100%; /* Shuru mein screen ke bahar */
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1001; /* Sabse upar dikhne ke liye */
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #0a0f0d; /* Background color confirm karein */
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
+
+  /* Jab 'open' class add hogi tab ye slide ho kar andar aayega */
+  .sidebar.open {
+    left: 0;
+  }
+
+  .close-sidebar-mobile {
+    display: block;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1002;
+  }
+}
+
+/* Laptop/Desktop par close button chupa dein */
+@media (min-width: 769px) {
+  .close-sidebar-mobile {
+    display: none;
+  }
+}

@@ -423,3 +423,18 @@
     box-shadow: 0 0 15px var(--accent-glow);
 }
 
+.hamburger-menu {
+    display: none; /* Desktop par hidden */
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 20px;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: block; /* Mobile par visible */
+    }
+}
