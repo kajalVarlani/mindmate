@@ -40,16 +40,21 @@ function Sidebar() {
 
     return (
         <section className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-            
-            {/* Mobile ke liye ek Close Button (X) add karein */}
-            <button className="close-sidebar-mobile" onClick={() => setSidebarOpen(false)}>
-                <i className="fa-solid fa-xmark"></i>
-            </button>
+        
+        {/* Step 1: Close Button ko top par rakhein */}
+        <button className="close-sidebar-mobile" onClick={() => setSidebarOpen(false)}>
+            <i className="fa-solid fa-xmark"></i>
+        </button>
 
-            <button className="newChatBtn" onClick={() => { setCurrThreadId(uuidv1()); setNewChat(true); setSidebarOpen(false); }}>
-                <span className="newChatIcon"><i className="fa-solid fa-plus"></i></span>
-                <span className="newChatText">New Session</span>
-            </button>
+        {/* Step 2: New Session Button */}
+        <button className="newChatBtn" onClick={() => { 
+            setCurrThreadId(uuidv1()); 
+            setNewChat(true); 
+            setSidebarOpen(false); // Mobile par click hote hi sidebar band ho jaye
+        }}>
+            <span className="newChatIcon"><i className="fa-solid fa-plus"></i></span>
+            <span className="newChatText">New Session</span>
+        </button>
 
             <ul className="history">
                 {allThreads.map((thread) => (

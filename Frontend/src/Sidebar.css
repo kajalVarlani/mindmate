@@ -389,3 +389,48 @@
     display: none;
   }
 }
+/* Sidebar.css ke media query section mein ye add karein */
+
+@media (max-width: 768px) {
+  .sidebar {
+    padding-top: 60px; /* Sabse important: New Session button ko niche dhakle ke liye */
+  }
+
+  .close-sidebar-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 15px;      /* Top se thoda niche */
+    right: 15px;    /* Right corner mein */
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.05); /* Halka background taaki dikhe */
+    border: 1px solid rgba(106, 191, 143, 0.2);
+    border-radius: 50%;
+    color: var(--accent);
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1010;
+    transition: all 0.2s ease;
+  }
+
+  .close-sidebar-mobile:active {
+    background: var(--accent);
+    color: var(--bg);
+    transform: scale(0.9);
+  }
+
+  /* New Session button ki width mobile par thodi choti taaki clean lage */
+  .newChatBtn {
+    margin: 10px 15px;
+    width: calc(100% - 30px);
+  }
+}
+
+/* Desktop par button chupa dein */
+@media (min-width: 769px) {
+  .close-sidebar-mobile {
+    display: none;
+  }
+}
