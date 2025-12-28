@@ -32,7 +32,7 @@ function Signup() {
 
 const handleSignup = async (e) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:8080/api/auth/signup", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),

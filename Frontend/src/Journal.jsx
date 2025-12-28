@@ -26,7 +26,7 @@ export default function Journal() {
     }, []);
 
     const fetchJournals = async () => {
-        const res = await fetch("http://localhost:8080/api/journal", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/journal`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -38,8 +38,8 @@ export default function Journal() {
         setLoading(true);
 
         const url = editingId
-            ? `http://localhost:8080/api/journal/${editingId}`
-            : "http://localhost:8080/api/journal";
+            ? `${import.meta.env.VITE_API_URL}/api/journal/${editingId}`
+            : `${import.meta.env.VITE_API_URL}/api/journal`;
 
         await fetch(url, {
             method: editingId ? "PUT" : "POST",
@@ -59,7 +59,7 @@ export default function Journal() {
     };
 
     const handleDelete = async (id) => {
-        await fetch(`http://localhost:8080/api/journal/${id}`, {
+        await fetch(`${import.meta.env.VITE_API_URL}/api/journal/${id}`, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },
         });
@@ -73,7 +73,7 @@ export default function Journal() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     const fetchStreak = async () => {
-        const res = await fetch("http://localhost:8080/api/user/me", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/me`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

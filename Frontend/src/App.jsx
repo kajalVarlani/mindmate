@@ -36,7 +36,10 @@ function App() {
 
   const fetchThreads = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/thread");
+      const res = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/thread`
+);
+
       const data = await res.json();
       setAllThreads(data);
     } catch (err) {
