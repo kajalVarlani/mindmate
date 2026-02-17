@@ -31,7 +31,9 @@ function Signup() {
   }, []);
 
 const handleSignup = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+
+  try {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -40,13 +42,19 @@ const handleSignup = async (e) => {
 
     const data = await res.json();
 
-    if (data.token) {
-      login(data.token, data.user.name);
-      navigate("/journal");
+    if (res.ok && data.token) {
+      login(data.token, data.user?.name);
+      navigate("/");
     } else {
       alert(data.message || "Signup failed");
     }
-  };
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error. Please try again.");
+  }
+};
+
 
 
 

@@ -1,129 +1,109 @@
 import "./ChatWindow.css";
 import Chat from "./Chat.jsx";
 import { MyContext } from "./MyContext.jsx";
-import { useContext, useState, useEffect } from "react";
-import { BounceLoader } from "react-spinners";
-import BreathingWidget from "./components/BreathingWidget.jsx";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 
 function ChatWindow() {
-    const navigate = useNavigate();
-    const { prompt, setPrompt, reply, setReply, currThreadId, prevChats, setPrevChats, newChat, setNewChat } = useContext(MyContext);
-    const [loading, setLoading] = useState(false);
-    const { fetchThreads } = useContext(MyContext);
-    const { setSidebarOpen } = useContext(MyContext);
-    useEffect(() => {
-        if (newChat) {
-            // CLEAR UI
-            setPrevChats([]);
-            setReply(null);
-            setPrompt("");
-            setNewChat(false);
-        }
-    }, [newChat]);
 
-    const getReply = async () => {
-        setLoading(true);
+  const {
+    prompt,
+    setPrompt,
+    sendMessage,      // ⭐ use context function
+    newChat,
+    setNewChat,
+    setPrevChats,
+    setReply,
+    setSidebarOpen
+  } = useContext(MyContext);
 
-        const options = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: prompt,
-                threadId: currThreadId
-            })
-        };
+  const [loading, setLoading] = useState(false);
 
-        try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/chat`, options);
-            const res = await response.json();
-            console.log(res);
-            setReply(res.reply);
-            await fetchThreads();
-        } catch (err) {
-            console.log(err);
-        }
+  // ✅ Clear UI on new chat
+  useEffect(() => {
+    if (newChat) {
+      setPrevChats([]);
+      setReply(null);
+      setPrompt("");
+      setNewChat(false);
+    }
+  }, [newChat]);
 
-        setLoading(false);
-    };
+  // ✅ Send message handler
+  const handleSend = async () => {
 
-    //Append new chat toprevChats
-    useEffect(() => {
-        if (prompt && reply) {
-            setPrevChats(prevChats =>
-                [...prevChats,
-                {
-                    role: "user",
-                    content: prompt
-                },
-                {
-                    role: "assistant",
-                    content: reply
-                }]
-            )
-        }
-        setPrompt("");
-    }, [reply])
+    if (!prompt.trim()) return;
 
-    return (
-        <div className="chatWindow">
+    setLoading(true);
 
-            {/* NAVBAR */}
-            <div className="navbar">
-                <button className="hamburger-menu" onClick={() => setSidebarOpen(true)}>
-                    <i className="fa-solid fa-bars-staggered"></i>
-                </button>
+    await sendMessage();   // ⭐ central API call
 
-                <span className="title">
-                    MindMate <i className="fa-solid fa-chevron-down"></i>
-                </span>
+    setLoading(false);
+  };
 
-                <div className="userIconDiv">
-                    <span className="userIcon">
-                        <i className="fa-solid fa-user"></i>
-                    </span>
-                </div>
-            </div>
+  return (
+    <div className="chatWindow">
 
-            {/* MESSAGES AREA */}
-            <div className="messagesArea">
-                <Chat />
+      {/* NAVBAR */}
+      <div className="navbar">
+        <button
+          className="hamburger-menu"
+          onClick={() => setSidebarOpen(true)}
+        >
+          <i className="fa-solid fa-bars-staggered"></i>
+        </button>
 
-                {loading && (
-                    <div className="typing-indicator">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                )}
-            </div>
+        <span className="title">
+          MindMate <i className="fa-solid fa-chevron-down"></i>
+        </span>
 
-            {/* INPUT SECTION */}
-            <div className="chatInput">
-                <div className="inputBox">
-                    <input
-                        placeholder="How are you feeling today?"
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        onKeyDown={(e) => (e.key === 'Enter' ? getReply() : '')}
-                    />
+        <div className="userIconDiv">
+          <span className="userIcon">
+            <i className="fa-solid fa-user"></i>
+          </span>
+        </div>
+      </div>
 
-                    <button className="sendBtn" onClick={getReply}>
-                        <i className="fa-solid fa-paper-plane"></i>
-                    </button>
-                </div>
+      {/* MESSAGES */}
+      <div className="messagesArea">
 
-                <p className="info">
-                    MindMate provides emotional support.
-                    If you are in crisis, please contact your local helpline.
-                </p>
-            </div>
+        <Chat />
+
+        {loading && (
+          <div className="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        )}
+
+      </div>
+
+      {/* INPUT */}
+      <div className="chatInput">
+        <div className="inputBox">
+
+          <input
+            placeholder="How are you feeling today?"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          />
+
+          <button className="sendBtn" onClick={handleSend}>
+            <i className="fa-solid fa-paper-plane"></i>
+          </button>
 
         </div>
 
-    );
+        <p className="info">
+          MindMate provides emotional support.
+          If you are in crisis, please contact your local helpline.
+        </p>
+
+      </div>
+
+    </div>
+  );
 }
 
 export default ChatWindow;

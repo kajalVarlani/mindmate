@@ -1,31 +1,20 @@
 import express from "express";
 import Thread from "../models/Thread.js";
-import getOpenAIAPIResponse from "../utils/openai.js";
+import getOpenAIAPIResponse, { generateChatTitle } from "../utils/openai.js";
+
+import authMiddleware from "../middleware/authMiddleware.js";
+import { v4 as uuidv4 } from "uuid";
+
 
 const router = express.Router();
-
-
-// ----------------------- TEST ROUTE -----------------------
-router.post("/test", async (req, res) => {
-    try {
-        const thread = new Thread({
-            threadId: "abc",
-            title: "Testing New Thread2"
-        });
-
-        const response = await thread.save();
-        res.send(response);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "Failed to save in DB" });
-    }
-});
-
+router.use(authMiddleware);   // ✅ ADD THIS LINE
 
 // ----------------------- GET ALL THREADS -----------------------
 router.get("/thread", async (req, res) => {
     try {
-        const threads = await Thread.find({}).sort({ updatedAt: -1 });
+        const threads = await Thread.find({ userId: req.user.id })
+            .sort({ updatedAt: -1 });
+
         res.json(threads);
     } catch (err) {
         console.log(err);
@@ -39,7 +28,11 @@ router.get("/thread/:threadId", async (req, res) => {
     const { threadId } = req.params;
 
     try {
-        const thread = await Thread.findOne({ threadId });
+        const thread = await Thread.findOne({
+            threadId,
+            userId: req.user.id
+        });
+
 
         if (!thread) {
             return res.status(404).json({ error: "Thread not found" });
@@ -58,7 +51,11 @@ router.delete("/thread/:threadId", async (req, res) => {
     const { threadId } = req.params;
 
     try {
-        const deletedThread = await Thread.findOneAndDelete({ threadId });
+        const deletedThread = await Thread.findOneAndDelete({
+            threadId,
+            userId: req.user.id
+        });
+
 
         if (!deletedThread) {
             return res.status(404).json({ error: "Thread cannot be deleted" });
@@ -74,57 +71,83 @@ router.delete("/thread/:threadId", async (req, res) => {
 // ----------------------- POST THREAD -----------------------
 
 router.post("/chat", async (req, res) => {
-    const { threadId, message } = req.body;
-    console.log("Incoming threadId:", threadId);
+    let { threadId, message } = req.body;
 
-    if (!threadId || !message) {
-        return res.status(400).json({ error: "missing required fields" });
+    if (!message) {
+        return res.status(400).json({ error: "Message is required" });
     }
 
+
     try {
-        let thread = await Thread.findOne({ threadId });
+        let thread = null;
+
+        if (threadId) {
+            thread = await Thread.findOne({
+                threadId,
+                userId: req.user.id
+            });
+        }
 
         if (!thread) {
+            threadId = uuidv4();
+
+            const aiTitle = await generateChatTitle(message);
+
             thread = new Thread({
                 threadId,
-                title: message.slice(0, 60), // 👈 यही जगह hai
-                messages: [{ role: "user", content: message }]
+                userId: req.user.id,
+                title: aiTitle || message.slice(0, 60),
+                messages: []
             });
-        } else {
+
+            thread.messages.push({ role: "user", content: message });
+
+
+        }
+        else {
             thread.messages.push({ role: "user", content: message });
         }
 
 
+
         // 🛑 Crisis pre-check (important for mental health apps)
-        if (/suicide|kill myself|end my life/i.test(message)) {
-            const safeReply =
-                "I'm really sorry you're feeling this way. You deserve support. Please consider reaching out to a trusted person or a local mental health helpline immediately.";
+        if (/suicide|kill myself|end my life|want to die|no reason to live|hurt myself/i.test(message)) {
+    const safeReply =
+        "I'm really sorry you're feeling this way. You deserve support. Please consider reaching out to a trusted person or a local mental health helpline immediately.";
 
-            thread.messages.push({ role: "assistant", content: safeReply });
-            await thread.save();
-            return res.json({ reply: safeReply });
-        }
+    thread.messages.push({ role: "assistant", content: safeReply });
+    await thread.save();
+    return res.json({
+        reply: safeReply,
+        threadId: thread.threadId
+    });
 
-        // 🔒 SAFE OPENAI CALL
-        const assistantReply = await getOpenAIAPIResponse(message);
+}
 
-        const finalReply =
-            assistantReply || "Sorry, I couldn't generate a response. Please try again.";
+const assistantReply = await getOpenAIAPIResponse(thread.messages);
 
-        thread.messages.push({
-            role: "assistant",
-            content: finalReply
-        });
 
-        thread.updatedAt = new Date();
-        await thread.save();
+const finalReply =
+    assistantReply || "Sorry, I couldn't generate a response. Please try again.";
 
-        res.json({ reply: finalReply });
+thread.messages.push({
+    role: "assistant",
+    content: finalReply
+});
+
+thread.updatedAt = new Date();
+await thread.save();
+
+res.json({
+    reply: finalReply,
+    threadId: thread.threadId
+});
+
 
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "Something went wrong..." });
-    }
+    console.log(err);
+    res.status(500).json({ error: "Something went wrong..." });
+}
 });
 
 

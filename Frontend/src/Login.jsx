@@ -28,21 +28,30 @@ function Login() {
   }, []);
 
 const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+
+  try {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
+
     const data = await res.json();
-    
-    if (data.token) {
-      login(data.token, data.user.name); 
+
+    if (res.ok && data.token) {
+      login(data.token, data.user?.name);
       navigate("/");
     } else {
-      alert("Invalid credentials");
+      alert(data.message || "Invalid credentials");
     }
-  };
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error. Please try again.");
+  }
+};
+
 
   return (
     <div className="auth-page-wrapper">
