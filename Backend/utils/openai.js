@@ -1,6 +1,5 @@
 import "dotenv/config";
 
-/* 🧠 SYSTEM PROMPT */
 const SYSTEM_PROMPT = `
 You are MindMate, an empathetic and calm mental health support assistant.
 
@@ -9,62 +8,57 @@ Guidelines:
 - Focus on emotional validation and gentle coping strategies.
 - Do NOT give medical or clinical diagnoses.
 - Do NOT prescribe medication.
-- Keep responses supportive and human, not robotic.
-- If the user expresses self-harm or suicidal thoughts,
-  encourage reaching out to a trusted person or local helpline.
-- Suggest using the mindful tools on the website when they feel low, anxious, or panicky.
-- If user mentions serious medical symptoms, suggest seeing a doctor immediately.
+- Keep responses supportive and human.
+If the user expresses self-harm thoughts, encourage reaching out to trusted help.
 `;
 
 const getOpenAIAPIResponse = async (messages) => {
-    try {
 
-        const response = await fetch(
-            "https://api.openai.com/v1/chat/completions",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-                },
-                body: JSON.stringify({
-                    model: "gpt-4o-mini",
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
 
-                    // ✅ FULL CONVERSATION MEMORY
-                    messages: [
-                        { role: "system", content: SYSTEM_PROMPT },
-                        ...messages
-                    ],
+      model: "gpt-4o-mini",
 
-                    temperature: 0.7,
-                    max_tokens: 200
-                })
-            }
-        );
+      // ⭐ CORRECT STRUCTURE
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        ...messages   // <-- conversation history
+      ],
 
-        // ✅ HANDLE HTTP ERRORS PROPERLY
-        if (!response.ok) {
-            const text = await response.text();
-            console.error("OpenAI HTTP error:", text);
-            throw new Error(`OpenAI request failed: ${response.status}`);
-        }
+      temperature: 0.7,
+      max_tokens: 200
+    })
+  };
 
-        const data = await response.json();
+  try {
 
-        // ✅ SAFE RESPONSE PARSE
-        const reply = data?.choices?.[0]?.message?.content;
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      options
+    );
 
-        if (!reply) {
-            throw new Error("Empty OpenAI reply");
-        }
+    const data = await response.json();
 
-        return reply.trim();
+    console.log("OpenAI response:", data);
 
-    } catch (err) {
-        console.error("OpenAI API Error:", err.message);
-        return null;
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error("Invalid OpenAI response");
     }
+
+    return data.choices[0].message.content;
+
+  } catch (err) {
+    console.error("OpenAI API Error:", err.message);
+    return null;
+  }
 };
+
+
 export const generateChatTitle = async (message) => {
     try {
 
