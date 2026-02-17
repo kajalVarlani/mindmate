@@ -175,3 +175,44 @@
     padding: 40px;
   }
 }
+/* FULLSCREEN OVERLAY */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.login-overlay-content {
+  text-align: center;
+  color: white;
+}
+
+.login-overlay-content h2 {
+  margin-top: 18px;
+  font-size: 28px;
+}
+
+.login-overlay-content p {
+  opacity: 0.8;
+  margin-top: 6px;
+}
+
+/* SIMPLE SPINNER */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  margin: auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

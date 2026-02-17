@@ -4,14 +4,18 @@ import "./Login.css";
 import { useAuth } from "./Context/AuthContext";
 
 function Login() {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [greeting, setGreeting] = useState("");
   const [affirmation, setAffirmation] = useState("");
+  const [loading, setLoading] = useState(false);   // ⭐ NEW
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
   useEffect(() => {
+
     const hour = new Date().getHours();
     if (hour < 12) setGreeting("Good morning");
     else if (hour < 18) setGreeting("Good afternoon");
@@ -24,40 +28,65 @@ function Login() {
       "You have the power to navigate through your thoughts.",
       "It is okay to slow down and breathe."
     ];
+
     setAffirmation(affirmations[new Date().getDate() % affirmations.length]);
+
   }, []);
 
-const handleLogin = async (e) => {
-  e.preventDefault();
+  const handleLogin = async (e) => {
 
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    e.preventDefault();
+    setLoading(true);   // ⭐ SHOW SCREEN IMMEDIATELY
 
-    const data = await res.json();
+    try {
 
-    if (res.ok && data.token) {
-      login(data.token, data.user?.name);
-      navigate("/");
-    } else {
-      alert(data.message || "Invalid credentials");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.token) {
+
+        login(data.token, data.user?.name);
+
+        // small delay makes transition smoother
+        setTimeout(() => navigate("/"), 400);
+
+      } else {
+        alert(data.message || "Invalid credentials");
+        setLoading(false);
+      }
+
+    } catch (err) {
+
+      console.error(err);
+      alert("Server error. Please try again.");
+      setLoading(false);
+
     }
-
-  } catch (err) {
-    console.error(err);
-    alert("Server error. Please try again.");
-  }
-};
-
+  };
 
   return (
+
     <div className="auth-page-wrapper">
+
+      {/* ⭐ FULL SCREEN LOGIN OVERLAY */}
+      {loading && (
+        <div className="login-overlay">
+          <div className="login-overlay-content">
+            <div className="spinner"></div>
+            <h2>Logging you in...</h2>
+            <p>Preparing your safe space ✨</p>
+          </div>
+        </div>
+      )}
+
       <div className="auth-content-container">
-        
-        {/* Left Side: Affirmation Panel (Glassmorphic) */}
+
+        {/* LEFT PANEL */}
         <div className="affirmation-section">
           <div className="affirmation-card">
             <div className="quote-icon">“</div>
@@ -69,15 +98,15 @@ const handleLogin = async (e) => {
           </div>
         </div>
 
-        {/* Right Side: Login Form */}
+        {/* LOGIN FORM */}
         <div className="login-section">
           <form className="login-form" onSubmit={handleLogin}>
-            <div className="form-top-note">
-              {greeting}
-            </div>
+
+            <div className="form-top-note">{greeting}</div>
+
             <h2>Welcome Back</h2>
             <p className="form-subtitle">Enter your private sanctuary.</p>
-            
+
             <div className="input-group">
               <input
                 type="email"
@@ -98,12 +127,19 @@ const handleLogin = async (e) => {
               />
             </div>
 
-            <button type="submit" className="primary-btn login-btn">Sign In</button>
+            <button
+              type="submit"
+              className="primary-btn login-btn"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
 
             <div className="auth-footer-links">
               <p>New here? <Link to="/signup">Start your journey</Link></p>
               <Link to="/" className="back-home">← Back to Home</Link>
             </div>
+
           </form>
         </div>
 
