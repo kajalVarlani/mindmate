@@ -18,11 +18,11 @@ const getOpenAIAPIResponse = async (messages) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+      "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
     },
     body: JSON.stringify({
 
-      model: "gpt-4o-mini",
+      model: "llama3-8b-8192",
 
       // ⭐ CORRECT STRUCTURE
       messages: [
@@ -38,13 +38,11 @@ const getOpenAIAPIResponse = async (messages) => {
   try {
 
     const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
+      "https://api.groq.com/openai/v1/chat/completions",
       options
     );
 
     const data = await response.json();
-
-    console.log("OpenAI response:", data);
 
     if (!data.choices?.[0]?.message?.content) {
       throw new Error("Invalid OpenAI response");
@@ -63,15 +61,15 @@ export const generateChatTitle = async (message) => {
     try {
 
         const response = await fetch(
-            "https://api.openai.com/v1/chat/completions",
+            "https://api.groq.com/openai/v1/chat/completions",
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+                    "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
                 },
                 body: JSON.stringify({
-                    model: "gpt-4o-mini",
+                    model: "llama3-8b-8192",
                     messages: [
                         {
                             role: "system",
