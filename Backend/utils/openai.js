@@ -47,7 +47,7 @@ const getOpenAIAPIResponse = async (messages) => {
     if (!data.choices?.[0]?.message?.content) {
       throw new Error("Invalid OpenAI response");
     }
-
+    console.log(data);
     return data.choices[0].message.content;
 
   } catch (err) {
