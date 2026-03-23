@@ -2,13 +2,18 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Signup.css";
 import { useAuth } from "./Context/AuthContext";
+import api from "./services/api";
 
 function Signup() {
+  const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
   const [greeting, setGreeting] = useState("");
   const [affirmation, setAffirmation] = useState("");
+  
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -30,33 +35,45 @@ function Signup() {
     setAffirmation(affirmations[new Date().getDate() % affirmations.length]);
   }, []);
 
-const handleSignup = async (e) => {
-  e.preventDefault();
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.token) {
-      login(data.token, data.user?.name);
-      navigate("/");
-    } else {
-      alert(data.message || "Signup failed");
+    if (!email.toLowerCase().endsWith("@gmail.com")) {
+      alert("Please use a valid @gmail.com email address.");
+      return;
     }
 
-  } catch (err) {
-    console.error(err);
-    alert("Server error. Please try again.");
-  }
-};
+    setLoading(true);
+    try {
+      const res = await api.post("/api/auth/send-otp", { email });
+      setStep(2);
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.error || "Failed to send OTP or Server error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
+    try {
+      const res = await api.post("/api/auth/signup", { name, email, password, otp });
+      const data = res.data;
 
+      if (data.token) {
+        login(data.token, data.user?.name);
+        navigate("/");
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.error || "Signup failed or Server error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="auth-page-wrapper">
@@ -76,50 +93,88 @@ const handleSignup = async (e) => {
 
         {/* Right Side: Signup Form */}
         <div className="signup-section">
-          <form className="signup-form" onSubmit={handleSignup}>
-            <div className="form-top-note">
-              {greeting}, start your journey.
-            </div>
-            <h2>Create Account</h2>
-            <p className="form-subtitle">Begin your private mental wellness journal.</p>
-            
-            <div className="input-group">
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
+          {step === 1 ? (
+            <form className="signup-form" onSubmit={handleSendOtp}>
+              <div className="form-top-note">
+                {greeting}, start your journey.
+              </div>
+              <h2>Create Account</h2>
+              <p className="form-subtitle">Begin your private mental wellness journal.</p>
+              
+              <div className="input-group">
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
 
-            <div className="input-group">
-              <input
-                type="email"
-                placeholder="Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+              <div className="input-group">
+                <input
+                  type="email"
+                  placeholder="Email Address (@gmail.com only)"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
 
-            <div className="input-group">
-              <input
-                type="password"
-                placeholder="Choose Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+              <div className="input-group">
+                <input
+                  type="password"
+                  placeholder="Choose Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength="6"
+                />
+              </div>
 
-            <button type="submit" className="primary-btn signup-btn">Get Started</button>
+              <button type="submit" className="primary-btn signup-btn" disabled={loading}>
+                {loading ? "Sending OTP..." : "Continue"}
+              </button>
 
-            <div className="auth-footer-links">
-              <p>Already have a sanctuary? <Link to="/login">Sign in here</Link></p>
-              <Link to="/" className="back-home">← Back to Home</Link>
-            </div>
-          </form>
+              <div className="auth-footer-links">
+                <p>Already have a sanctuary? <Link to="/login">Sign in here</Link></p>
+                <Link to="/" className="back-home">← Back to Home</Link>
+              </div>
+            </form>
+          ) : (
+             <form className="signup-form" onSubmit={handleSignup}>
+              <div className="form-top-note">
+                Verify Your Email
+              </div>
+              <h2>Enter OTP</h2>
+              <p className="form-subtitle">We sent a 6-digit code to {email}</p>
+              
+              <div className="input-group">
+                <input
+                  type="text"
+                  placeholder="Enter 6-digit OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  required
+                  maxLength="6"
+                />
+              </div>
+
+              <button type="submit" className="primary-btn signup-btn" disabled={loading}>
+                {loading ? "Verifying..." : "Verify & Get Started"}
+              </button>
+
+              <div className="auth-footer-links" style={{ marginTop: '15px' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setStep(1)} 
+                  style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  ← Back to details
+                </button>
+              </div>
+            </form>
+          )}
         </div>
 
       </div>

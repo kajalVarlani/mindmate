@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Login.css";
 import { useAuth } from "./Context/AuthContext";
+import api from "./services/api";
 
 function Login() {
 
@@ -39,33 +40,18 @@ function Login() {
     setLoading(true);   // ⭐ SHOW SCREEN IMMEDIATELY
 
     try {
+      const res = await api.post("/api/auth/login", { email, password });
+      const data = res.data;
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.token) {
-
+      if (data.token) {
         login(data.token, data.user?.name);
-
         // small delay makes transition smoother
         setTimeout(() => navigate("/"), 400);
-
-      } else {
-        alert(data.message || "Invalid credentials");
-        setLoading(false);
       }
-
     } catch (err) {
-
       console.error(err);
-      alert("Server error. Please try again.");
+      alert(err.response?.data?.message || err.response?.data?.error || "Invalid credentials or Server error");
       setLoading(false);
-
     }
   };
 

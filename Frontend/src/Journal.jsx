@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Journal.css";
 import { Link } from "react-router-dom";
+import api from "./services/api";
 
 export default function Journal() {
     const [journals, setJournals] = useState([]);
@@ -26,29 +27,28 @@ export default function Journal() {
     }, []);
 
     const fetchJournals = async () => {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/journal`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setJournals(data);
+        try {
+            const res = await api.get("/api/journal");
+            setJournals(res.data);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     const handleSave = async () => {
         if (!mood || !content) return alert("Please select a mood and write something.");
         setLoading(true);
 
-        const url = editingId
-            ? `${import.meta.env.VITE_API_URL}/api/journal/${editingId}`
-            : `${import.meta.env.VITE_API_URL}/api/journal`;
-
-        await fetch(url, {
-            method: editingId ? "PUT" : "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ mood, content }),
-        });
+        try {
+            const url = editingId ? `/api/journal/${editingId}` : `/api/journal`;
+            if (editingId) {
+                await api.put(url, { mood, content });
+            } else {
+                await api.post(url, { mood, content });
+            }
+        } catch (err) {
+            console.error("Failed to save journal entry", err);
+        }
 
         setMood("");
         setContent("");
@@ -59,11 +59,12 @@ export default function Journal() {
     };
 
     const handleDelete = async (id) => {
-        await fetch(`${import.meta.env.VITE_API_URL}/api/journal/${id}`, {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        fetchJournals();
+        try {
+            await api.delete(`/api/journal/${id}`);
+            fetchJournals();
+        } catch (err) {
+            console.error("Failed to delete journal", err);
+        }
     };
 
     const handleEdit = (journal) => {
@@ -73,11 +74,12 @@ export default function Journal() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     const fetchStreak = async () => {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setStreak(data.streak);
+        try {
+            const res = await api.get("/api/user/me");
+            setStreak(res.data.streak);
+        } catch (err) {
+            console.error("Failed to fetch streak", err);
+        }
     };
 
 

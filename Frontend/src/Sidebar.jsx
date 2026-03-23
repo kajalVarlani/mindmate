@@ -1,6 +1,7 @@
 import "./Sidebar.css";
 import { useContext } from "react";
 import { MyContext } from "./MyContext.jsx";
+import api from "./services/api";
 
 function Sidebar() {
 
@@ -25,14 +26,8 @@ function Sidebar() {
     setCurrThreadId(newThreadId);
 
     try {
-
-      const response = await fetch(`${API}/api/thread/${newThreadId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      const res = await response.json();
+      const response = await api.get(`/api/thread/${newThreadId}`);
+      const res = response.data;
 
       setPrevChats(res);
       setReply(null);
@@ -52,13 +47,7 @@ function Sidebar() {
     if (!window.confirm("Delete this conversation?")) return;
 
     try {
-
-      await fetch(`${API}/api/thread/${threadId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      await api.delete(`/api/thread/${threadId}`);
 
       setAllThreads(prev => prev.filter(t => t.threadId !== threadId));
 
