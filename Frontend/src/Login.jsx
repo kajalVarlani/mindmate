@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import "./Login.css";
 import { useAuth } from "./Context/AuthContext";
 import api from "./services/api";
+import { useToast } from "./components/Toast";
 
 function Login() {
 
@@ -14,6 +15,7 @@ function Login() {
 
   const navigate = useNavigate();
   const { login } = useAuth();
+  const showToast = useToast();
 
   useEffect(() => {
 
@@ -49,8 +51,8 @@ function Login() {
         setTimeout(() => navigate("/"), 400);
       }
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || err.response?.data?.error || "Invalid credentials or Server error");
+      const message = err.response?.data?.message || err.response?.data?.error || "Invalid credentials. Please try again.";
+      showToast(message, "error");
       setLoading(false);
     }
   };
@@ -123,6 +125,7 @@ function Login() {
 
             <div className="auth-footer-links">
               <p>New here? <Link to="/signup">Start your journey</Link></p>
+              <Link to="/forgot-password" className="forgot-link">Forgot Password?</Link>
               <Link to="/" className="back-home">← Back to Home</Link>
             </div>
 

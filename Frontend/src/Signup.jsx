@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import "./Signup.css";
 import { useAuth } from "./Context/AuthContext";
 import api from "./services/api";
+import { useToast } from "./components/Toast";
 
 function Signup() {
   const [step, setStep] = useState(1);
@@ -16,6 +17,7 @@ function Signup() {
   
   const navigate = useNavigate();
   const { login } = useAuth();
+  const showToast = useToast();
 
   useEffect(() => {
     // Greeting logic
@@ -39,17 +41,18 @@ function Signup() {
     e.preventDefault();
 
     if (!email.toLowerCase().endsWith("@gmail.com")) {
-      alert("Please use a valid @gmail.com email address.");
+      showToast("Please use a valid @gmail.com email address.", "warning");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await api.post("/api/auth/send-otp", { email });
+      await api.post("/api/auth/send-otp", { email });
+      showToast("OTP sent! Check your inbox.", "success");
       setStep(2);
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.error || "Failed to send OTP or Server error");
+      const message = err.response?.data?.error || "Failed to send OTP. Please try again.";
+      showToast(message, "error");
     } finally {
       setLoading(false);
     }
@@ -68,8 +71,8 @@ function Signup() {
         navigate("/");
       }
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.error || "Signup failed or Server error");
+      const message = err.response?.data?.error || "Signup failed. Please try again.";
+      showToast(message, "error");
     } finally {
       setLoading(false);
     }

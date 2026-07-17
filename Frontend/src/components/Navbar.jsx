@@ -10,7 +10,7 @@ export default function Navbar() {
 
     // JWT Logic: Check if a token exists in local storage
     const token = localStorage.getItem("token");
-    const { isAuthenticated, logout } = useAuth(); // Refresh ki zaroorat nahi padegi
+    const { isAuthenticated, userRole, logout } = useAuth(); // Refresh ki zaroorat nahi padegi
     const navigate = useNavigate();
     const handleLogout = () => {
         logout(); // Yeh context update karega aur UI turant change hogi
@@ -30,10 +30,22 @@ export default function Navbar() {
                     {isAuthenticated ? (
                         /* Logged In Links */
                         <>
-                            <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>Dashboard</Link>
-                            <Link to="/MindfulTools" className={`nav-item ${location.pathname === '/MindfulTools' ? 'active' : ''}`}>Tools</Link>
-                            <Link to="/journal" className={`nav-item ${location.pathname === '/journal' ? 'active' : ''}`}>Journal</Link>
-                            <Link to="/chat" className={`nav-item ${location.pathname === '/chat' ? 'active' : ''}`}>AI Companion</Link>
+                            {userRole === "user" && (
+                                <>
+                                    <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>Dashboard</Link>
+                                    <Link to="/MindfulTools" className={`nav-item ${location.pathname === '/MindfulTools' ? 'active' : ''}`}>Tools</Link>
+                                    <Link to="/journal" className={`nav-item ${location.pathname === '/journal' ? 'active' : ''}`}>Journal</Link>
+                                    <Link to="/chat" className={`nav-item ${location.pathname === '/chat' ? 'active' : ''}`}>AI Companion</Link>
+                                    <Link to="/therapists" className={`nav-item ${location.pathname === '/therapists' ? 'active' : ''}`}>Find Therapist</Link>
+                                    <Link to="/my-therapist" className={`nav-item ${location.pathname === '/my-therapist' ? 'active' : ''}`}>My Sessions</Link>
+                                </>
+                            )}
+                            {userRole === "therapist" && (
+                                <Link to="/therapist/dashboard" className={`nav-item ${location.pathname === '/therapist/dashboard' ? 'active' : ''}`}>Therapist Dashboard</Link>
+                            )}
+                            {userRole === "admin" && (
+                                <Link to="/admin" className={`nav-item ${location.pathname === '/admin' ? 'active' : ''}`}>Admin Control</Link>
+                            )}
                         </>
                     ) : (
                         /* Visitor Links */

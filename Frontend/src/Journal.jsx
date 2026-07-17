@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./Journal.css";
 import { Link } from "react-router-dom";
 import api from "./services/api";
+import { useToast } from "./components/Toast";
+import MoodAnalytics from "./components/MoodAnalytics";
 
 export default function Journal() {
     const [journals, setJournals] = useState([]);
@@ -14,6 +16,7 @@ export default function Journal() {
 
 
     const token = localStorage.getItem("token");
+    const showToast = useToast();
 
     useEffect(() => {
         // Dynamic Greeting
@@ -36,18 +39,25 @@ export default function Journal() {
     };
 
     const handleSave = async () => {
-        if (!mood || !content) return alert("Please select a mood and write something.");
+        if (!mood || !content) {
+            showToast("Please select a mood and write something.", "warning");
+            return;
+        }
         setLoading(true);
 
         try {
             const url = editingId ? `/api/journal/${editingId}` : `/api/journal`;
             if (editingId) {
                 await api.put(url, { mood, content });
+                showToast("Entry updated!", "success");
             } else {
-                await api.post(url, { mood, content });
+                const res = await api.post(url, { mood, content });
+                // ✅ Use streak returned from backend (Step 1 fix)
+                if (res.data.streak !== undefined) setStreak(res.data.streak);
+                showToast("Journal entry saved!", "success");
             }
         } catch (err) {
-            console.error("Failed to save journal entry", err);
+            showToast("Failed to save your entry. Please try again.", "error");
         }
 
         setMood("");
@@ -55,15 +65,16 @@ export default function Journal() {
         setEditingId(null);
         setLoading(false);
         fetchJournals();
-        fetchStreak();
+        if (!editingId) fetchStreak(); // only refetch if no streak in response
     };
 
     const handleDelete = async (id) => {
         try {
             await api.delete(`/api/journal/${id}`);
+            showToast("Entry deleted.", "info");
             fetchJournals();
         } catch (err) {
-            console.error("Failed to delete journal", err);
+            showToast("Failed to delete entry. Please try again.", "error");
         }
     };
 
@@ -142,6 +153,7 @@ export default function Journal() {
 
                     {/* Right Side: Feed Section */}
                     <div className="journal-feed-section">
+                        <MoodAnalytics journals={journals} />
                         <h3>Recent Reflections</h3>
                         <div className="journal-list">
                             {journals.length === 0 ? (

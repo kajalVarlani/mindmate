@@ -14,7 +14,20 @@ import { useAuth } from "./Context/AuthContext";
 import api from "./services/api";
 import NotFound from "./NotFound";
 import { AnimatePresence, motion } from "framer-motion";
-import AudioPlayer from "./components/AudioPlayer";
+import { useToast } from "./components/Toast";
+import ForgotPassword from "./ForgotPassword";
+
+// Therapist and Admin module pages
+import TherapistDirectory from "./TherapistDirectory";
+import TherapistProfile from "./TherapistProfile";
+import MyTherapist from "./MyTherapist";
+import SessionChat from "./SessionChat";
+import TherapistRegister from "./TherapistRegister";
+import TherapistLogin from "./TherapistLogin";
+import TherapistDashboard from "./TherapistDashboard";
+import TherapistSetup from "./TherapistSetup";
+import AdminLogin from "./AdminLogin";
+import AdminPanel from "./AdminPanel";
 
 function ChatLayout() {
   return (
@@ -57,7 +70,8 @@ function App() {
 
   const API = import.meta.env.VITE_API_URL;
 
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, userRole, loading } = useAuth();
+  const showToast = useToast();
 
   // ✅ Fetch threads WITH token
   const fetchThreads = async () => {
@@ -69,48 +83,90 @@ function App() {
     }
   };
 
-  // ✅ Fetch threads when logged in
+  // ✅ Fetch threads only for regular users (not admin/therapist)
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && userRole === "user") {
       fetchThreads();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, userRole]);
 
-  // ⭐ CENTRAL CHAT SEND FUNCTION (important architecture fix)
+  // ⭐ CENTRAL CHAT SEND FUNCTION (important architecture fix - now with real streaming)
   const sendMessage = async () => {
-
     if (!prompt.trim()) return;
 
     const userMessage = { role: "user", content: prompt };
-
     setPrevChats(prev => [...prev, userMessage]);
     setPrompt("");
-    setReply(null);
+    setReply(""); // Initialize reply as empty string to trigger streaming state in Chat UI
 
     try {
-      const res = await api.post("/api/chat", {
-        message: userMessage.content,
-        threadId: currThreadId
-      });
-
-      const data = res.data;
-
-      // ⭐ IMPORTANT: backend returns threadId
-      if (!currThreadId && data.threadId) {
-        setCurrThreadId(data.threadId);
-        fetchThreads();
+      const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const assistantMessage = {
-        role: "assistant",
-        content: data.reply
-      };
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8080"}/api/chat`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          message: userMessage.content,
+          threadId: currThreadId
+        })
+      });
 
-      setPrevChats(prev => [...prev, assistantMessage]);
-      setReply(data.reply);
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedReply = "";
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          const cleanLine = line.trim();
+          if (!cleanLine) continue;
+          if (cleanLine === "data: [DONE]") continue;
+
+          if (cleanLine.startsWith("data: ")) {
+            try {
+              const parsed = JSON.parse(cleanLine.slice(6));
+              
+              if (parsed.threadId && !currThreadId) {
+                setCurrThreadId(parsed.threadId);
+                fetchThreads();
+              }
+              
+              if (parsed.content) {
+                accumulatedReply += parsed.content;
+                setReply(accumulatedReply);
+              }
+            } catch (e) {
+              // ignore malformed lines
+            }
+          }
+        }
+      }
+
+      if (accumulatedReply) {
+        setPrevChats(prev => [...prev, { role: "assistant", content: accumulatedReply }]);
+      }
+      setReply(null);
 
     } catch (err) {
-      console.log(err);
+      showToast("Couldn't send message. Please try again.", "error");
+      setReply(null);
     }
   };
 
@@ -127,32 +183,70 @@ function App() {
   };
 
   if (loading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#6860E6' }}>Loading MindMate...</div>;
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'var(--accent)', background: 'var(--bg)', fontStyle: 'italic', fontWeight: 600 }}>Loading MindMate...</div>;
   }
 
   return (
     <MyContext.Provider value={providerValues}>
-      <AudioPlayer />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
 
           <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
           <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
           <Route path="/signup" element={<PageWrapper><Signup /></PageWrapper>} />
+          <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
 
           <Route
             path="/chat"
-            element={isAuthenticated ? <PageWrapper><ChatLayout /></PageWrapper> : <Navigate to="/login" />}
+            element={isAuthenticated && userRole === "user" ? <PageWrapper><ChatLayout /></PageWrapper> : <Navigate to="/login" />}
           />
 
           <Route
             path="/journal"
-            element={isAuthenticated ? <PageWrapper><Journal /></PageWrapper> : <Navigate to="/login" />}
+            element={isAuthenticated && userRole === "user" ? <PageWrapper><Journal /></PageWrapper> : <Navigate to="/login" />}
           />
 
           <Route
             path="/MindfulTools"
-            element={isAuthenticated ? <PageWrapper><MindfulTools /></PageWrapper> : <Navigate to="/login" />}
+            element={isAuthenticated && userRole === "user" ? <PageWrapper><MindfulTools /></PageWrapper> : <Navigate to="/login" />}
+          />
+
+          {/* Therapist Module Routes */}
+          <Route
+            path="/therapists"
+            element={isAuthenticated && userRole === "user" ? <PageWrapper><TherapistDirectory /></PageWrapper> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/therapists/:id"
+            element={isAuthenticated && userRole === "user" ? <PageWrapper><TherapistProfile /></PageWrapper> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/my-therapist"
+            element={isAuthenticated && userRole === "user" ? <PageWrapper><MyTherapist /></PageWrapper> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/session/:id"
+            element={isAuthenticated ? <PageWrapper><SessionChat /></PageWrapper> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/therapist/register"
+            element={isAuthenticated && userRole === "user" ? <PageWrapper><TherapistRegister /></PageWrapper> : <Navigate to="/login" />}
+          />
+          <Route path="/therapist/login" element={<PageWrapper><TherapistLogin /></PageWrapper>} />
+          <Route
+            path="/therapist/dashboard"
+            element={isAuthenticated && userRole === "therapist" ? <PageWrapper><TherapistDashboard /></PageWrapper> : <Navigate to="/therapist/login" />}
+          />
+          <Route
+            path="/therapist/setup"
+            element={isAuthenticated && userRole === "therapist" ? <PageWrapper><TherapistSetup /></PageWrapper> : <Navigate to="/therapist/login" />}
+          />
+
+          {/* Admin Portal Routes */}
+          <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
+          <Route
+            path="/admin"
+            element={isAuthenticated && userRole === "admin" ? <PageWrapper><AdminPanel /></PageWrapper> : <Navigate to="/admin/login" />}
           />
 
           {/* Catch-all 404 Route */}

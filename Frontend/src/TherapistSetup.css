@@ -1,0 +1,339 @@
+.ts-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(106, 191, 143, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(126, 184, 212, 0.05) 0%, transparent 50%);
+  padding: 40px 24px;
+  box-sizing: border-box;
+}
+
+.ts-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(106, 191, 143, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 44px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: var(--shadow-lg);
+  box-sizing: border-box;
+}
+
+.ts-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  text-shadow: 0 0 30px var(--accent-glow);
+  text-align: center;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.ts-subtitle {
+  font-size: 14px;
+  color: var(--text-light);
+  text-align: center;
+  margin: 0 0 32px 0;
+  line-height: 1.4;
+}
+
+/* Steps Stepper */
+.ts-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 36px;
+}
+
+.ts-step {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  transition: color 0.3s;
+}
+
+.ts-step.active {
+  color: var(--accent);
+}
+
+.ts-step-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+/* Step container and forms */
+.ts-form-step h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 16px 0;
+}
+
+.step-desc {
+  font-size: 14px;
+  color: var(--text-light);
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+}
+
+.ts-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.ts-input-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ts-input-group input,
+.ts-input-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid rgba(106, 191, 143, 0.15);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.2);
+  outline: none;
+  transition: var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.ts-input-group input:focus,
+.ts-input-group select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(106, 191, 143, 0.15);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.ts-input-tip {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* Day Toggle List */
+.ts-days-select {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+.ts-day-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(106, 191, 143, 0.15);
+  padding: 10px 0;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: center;
+}
+
+.ts-day-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 4px 10px rgba(106, 191, 143, 0.25);
+}
+
+/* Day Slots Cards */
+.ts-slots-management {
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 24px;
+  border: 1.5px solid rgba(106, 191, 143, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.no-days {
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+  margin: 20px 0;
+}
+
+.ts-day-slot-card {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 16px;
+}
+
+.ts-day-slot-card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.ts-day-slot-card h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 10px 0;
+}
+
+/* Slot Adder box */
+.ts-slot-adder {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ts-slot-adder input {
+  padding: 8px 12px;
+  border: 1.5px solid rgba(106, 191, 143, 0.15);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.2);
+  outline: none;
+  width: 140px;
+  box-sizing: border-box;
+}
+
+.ts-slot-adder input:focus {
+  border-color: var(--accent);
+}
+
+.ts-slot-adder button {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.ts-slot-adder button:hover {
+  background: var(--accent-hover);
+}
+
+/* Added active slots tags list */
+.ts-active-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.no-slots {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.ts-slot-tag {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(106, 191, 143, 0.05);
+  border: 1px solid rgba(106, 191, 143, 0.25);
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ts-slot-tag button {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 0 0 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Form Actions */
+.ts-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.ts-btn {
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ts-btn--primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: var(--bg);
+  box-shadow: 0 6px 20px rgba(106, 191, 143, 0.2);
+}
+
+.ts-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(106, 191, 143, 0.3);
+}
+
+.ts-btn--ghost {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-light);
+}
+
+.ts-btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ts-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ts-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(10, 15, 13, 0.3);
+  border-top-color: var(--bg);
+  border-radius: 50%;
+  animation: ts-spin 0.75s linear infinite;
+  display: inline-block;
+}
+
+@keyframes ts-spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade {
+  animation: fade 0.35s ease;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

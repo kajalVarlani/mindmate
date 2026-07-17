@@ -45,6 +45,18 @@ export default function Home() {
               <h3>Mindful Tools</h3>
               <p>Breathing, Grounding & more.</p>
             </div>
+
+            <div className="action-card" onClick={() => navigate("/therapists")}>
+              <div className="action-icon">🩺</div>
+              <h3>Consult Therapist</h3>
+              <p>Schedule professional sessions.</p>
+            </div>
+
+            <div className="action-card" onClick={() => navigate("/therapist/register")}>
+              <div className="action-icon">💼</div>
+              <h3>Apply as Therapist</h3>
+              <p>Join our team & help others heal.</p>
+            </div>
           </div>
         </section>
 
@@ -53,6 +65,16 @@ export default function Home() {
             <p>"Whatever you feel. Put it down."</p>
           </div>
         </section>
+
+        <footer className="dashboard-footer">
+          <button className="footer-admin-btn" onClick={() => navigate("/admin/login")}>
+            🛡️ Admin Portal
+          </button>
+          <span className="footer-separator">•</span>
+          <button className="footer-admin-btn" onClick={() => navigate("/therapist/login")}>
+            🩺 Therapist Portal
+          </button>
+        </footer>
       </main>
     </div>
   );

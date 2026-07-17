@@ -1,0 +1,158 @@
+/* ─────────────────────────────────────────────
+   Backdrop (full-screen overlay)
+───────────────────────────────────────────── */
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 13, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: backdrop-in 0.2s ease;
+}
+
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────
+   Modal card
+───────────────────────────────────────────── */
+.confirm-modal {
+  background: var(--bg-soft);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-md);
+  padding: 36px 32px 28px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  animation: modal-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(106, 191, 143, 0.15);
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Variant — top accent border */
+.confirm-modal--danger  { border-top: 4px solid #ef4444; }
+.confirm-modal--warning { border-top: 4px solid #f59e0b; }
+.confirm-modal--info    { border-top: 4px solid var(--accent); }
+
+/* ─────────────────────────────────────────────
+   Icon
+───────────────────────────────────────────── */
+.confirm-icon {
+  font-size: 40px;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+
+/* ─────────────────────────────────────────────
+   Text
+───────────────────────────────────────────── */
+.confirm-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
+}
+
+.confirm-message {
+  font-size: 14px;
+  color: var(--text-light);
+  line-height: 1.5;
+  margin: 0 0 28px;
+}
+
+/* ─────────────────────────────────────────────
+   Action buttons
+───────────────────────────────────────────── */
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirm-btn {
+  flex: 1;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition-fast);
+}
+
+.confirm-btn:hover {
+  transform: translateY(-1px);
+}
+
+.confirm-btn:active {
+  transform: translateY(0);
+  opacity: 0.85;
+}
+
+/* Cancel — neutral */
+.confirm-btn--cancel {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-light);
+}
+
+.confirm-btn--cancel:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Danger — red */
+.confirm-btn--danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+}
+
+.confirm-btn--danger:hover {
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* Warning — amber */
+.confirm-btn--warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+}
+
+/* Info — green */
+.confirm-btn--info {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: var(--bg);
+  box-shadow: 0 4px 14px rgba(106, 191, 143, 0.2);
+}
+
+/* ─────────────────────────────────────────────
+   Mobile
+───────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .confirm-modal {
+    padding: 28px 20px 22px;
+  }
+
+  .confirm-actions {
+    flex-direction: column-reverse;
+  }
+}

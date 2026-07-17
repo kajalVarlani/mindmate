@@ -1,7 +1,9 @@
 import "./Sidebar.css";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { MyContext } from "./MyContext.jsx";
 import api from "./services/api";
+import { useToast } from "./components/Toast";
+import ConfirmModal from "./components/ConfirmModal";
 
 function Sidebar() {
 
@@ -17,56 +19,59 @@ function Sidebar() {
     setReply
   } = useContext(MyContext);
 
-  const API = import.meta.env.VITE_API_URL;
-  const token = localStorage.getItem("token");
+  const showToast = useToast();
+
+  // ConfirmModal state
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   // ✅ SWITCH THREAD
   const changeThread = async (newThreadId) => {
-
     setCurrThreadId(newThreadId);
-
     try {
       const response = await api.get(`/api/thread/${newThreadId}`);
-      const res = response.data;
-
-      setPrevChats(res);
+      setPrevChats(response.data);
       setReply(null);
       setNewChat(false);
       setSidebarOpen(false);
-
     } catch (err) {
-      console.log("Error switching thread:", err);
+      showToast("Couldn't load this conversation.", "error");
     }
   };
 
-  // ✅ DELETE THREAD
-  const deleteThread = async (e, threadId) => {
-
+  // ✅ Trigger delete confirmation
+  const requestDelete = (e, threadId) => {
     e.stopPropagation();
+    setPendingDeleteId(threadId);
+    setConfirmOpen(true);
+  };
 
-    if (!window.confirm("Delete this conversation?")) return;
+  // ✅ Confirmed delete
+  const confirmDelete = async () => {
+    setConfirmOpen(false);
+    const threadId = pendingDeleteId;
+    setPendingDeleteId(null);
 
     try {
       await api.delete(`/api/thread/${threadId}`);
-
       setAllThreads(prev => prev.filter(t => t.threadId !== threadId));
 
-      // if deleted active thread → reset UI
+      // If deleted thread was active → reset UI
       if (currThreadId === threadId) {
         setCurrThreadId(null);
         setPrevChats([]);
         setReply(null);
         setNewChat(true);
       }
-
+      showToast("Conversation deleted.", "info");
     } catch (err) {
-      console.log("Delete failed:", err);
+      showToast("Failed to delete conversation. Please try again.", "error");
     }
   };
 
   // ✅ NEW SESSION
   const handleNewSession = () => {
-    setCurrThreadId(null);   // ⭐ backend will generate ID
+    setCurrThreadId(null);
     setPrevChats([]);
     setReply(null);
     setNewChat(true);
@@ -74,66 +79,71 @@ function Sidebar() {
   };
 
   return (
+    <>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        title="Delete Conversation?"
+        message="This chat will be permanently deleted and cannot be recovered."
+        confirmText="Delete"
+        cancelText="Keep it"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => { setConfirmOpen(false); setPendingDeleteId(null); }}
+      />
 
-    <section className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+      <section className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
 
-      {/* CLOSE BUTTON */}
-      <button
-        className="close-sidebar-mobile"
-        onClick={() => setSidebarOpen(false)}
-      >
-        <i className="fa-solid fa-xmark"></i>
-      </button>
+        {/* CLOSE BUTTON */}
+        <button
+          className="close-sidebar-mobile"
+          onClick={() => setSidebarOpen(false)}
+        >
+          <i className="fa-solid fa-xmark"></i>
+        </button>
 
-      {/* NEW SESSION */}
-      <button className="newChatBtn" onClick={handleNewSession}>
-        <span className="newChatIcon">
-          <i className="fa-solid fa-plus"></i>
-        </span>
-        <span className="newChatText">New Session</span>
-      </button>
+        {/* NEW SESSION */}
+        <button className="newChatBtn" onClick={handleNewSession}>
+          <span className="newChatIcon">
+            <i className="fa-solid fa-plus"></i>
+          </span>
+          <span className="newChatText">New Session</span>
+        </button>
 
-      {/* THREAD LIST */}
-      <ul className="history">
-
-        {allThreads.map((thread) => (
-
-          <li
-            key={thread.threadId}
-            className={`history-item ${
-              currThreadId === thread.threadId ? "active" : ""
-            }`}
-            onClick={() => changeThread(thread.threadId)}
-          >
-
-            <i className="fa-regular fa-message chat-icon-lead"></i>
-
-            <span className="thread-title">
-              {thread.title.length > 28
-                ? thread.title.slice(0, 28) + "..."
-                : thread.title}
-            </span>
-
-            <button
-              className="delete-thread-btn"
-              onClick={(e) => deleteThread(e, thread.threadId)}
+        {/* THREAD LIST */}
+        <ul className="history">
+          {allThreads.map((thread) => (
+            <li
+              key={thread.threadId}
+              className={`history-item ${currThreadId === thread.threadId ? "active" : ""}`}
+              onClick={() => changeThread(thread.threadId)}
             >
-              <i className="fa-solid fa-trash-can"></i>
-            </button>
+              <i className="fa-regular fa-message chat-icon-lead"></i>
 
-          </li>
+              <span className="thread-title">
+                {thread.title.length > 28
+                  ? thread.title.slice(0, 28) + "..."
+                  : thread.title}
+              </span>
 
-        ))}
+              <button
+                className="delete-thread-btn"
+                onClick={(e) => requestDelete(e, thread.threadId)}
+              >
+                <i className="fa-solid fa-trash-can"></i>
+              </button>
+            </li>
+          ))}
+        </ul>
 
-      </ul>
+        <div className="sign">
+          <div className="sidebar-footer-glow"></div>
+          <p>MINDMATE AI</p>
+        </div>
 
-      <div className="sign">
-        <div className="sidebar-footer-glow"></div>
-        <p>MINDMATE AI</p>
-      </div>
-
-    </section>
+      </section>
+    </>
   );
 }
 
 export default Sidebar;
+

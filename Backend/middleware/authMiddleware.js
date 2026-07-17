@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const protect = (req, res, next) => {
-
+const protect = (role) => (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -13,15 +12,26 @@ const protect = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = { id: decoded.userId };
+    // Default to "user" if no role is explicitly present (for backward compatibility)
+    const userRole = decoded.role || "user";
+    if (role && userRole !== role) {
+      return res.status(403).json({ message: "Forbidden: insufficient permissions" });
+    }
 
-
+    req.user = {
+      id: decoded.userId,
+      role: userRole,
+      name: decoded.name
+    };
 
     next();
-
-  } catch {
+  } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
 
-export default protect;
+export const protectUser = protect("user");
+export const protectTherapist = protect("therapist");
+export const protectAdmin = protect("admin");
+
+export default protectUser;

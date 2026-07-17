@@ -1,16 +1,15 @@
 import express from "express";
 import Thread from "../models/Thread.js";
-import getOpenAIAPIResponse, { generateChatTitle } from "../utils/openai.js";
+import getOpenAIAPIResponse, { generateChatTitle, streamOpenAIAPIResponse } from "../utils/openai.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
 import { v4 as uuidv4 } from "uuid";
 
 
 const router = express.Router();
-router.use(authMiddleware);   // ✅ ADD THIS LINE
 
 // ----------------------- GET ALL THREADS -----------------------
-router.get("/thread", async (req, res) => {
+router.get("/thread", authMiddleware, async (req, res) => {
     try {
         const threads = await Thread.find({ userId: req.user.id })
             .sort({ updatedAt: -1 });
@@ -24,7 +23,7 @@ router.get("/thread", async (req, res) => {
 
 
 // ----------------------- GET SPECIFIC THREAD -----------------------
-router.get("/thread/:threadId", async (req, res) => {
+router.get("/thread/:threadId", authMiddleware, async (req, res) => {
     const { threadId } = req.params;
 
     try {
@@ -47,7 +46,7 @@ router.get("/thread/:threadId", async (req, res) => {
 
 
 // ----------------------- DELETE THREAD -----------------------
-router.delete("/thread/:threadId", async (req, res) => {
+router.delete("/thread/:threadId", authMiddleware, async (req, res) => {
     const { threadId } = req.params;
 
     try {
@@ -70,13 +69,12 @@ router.delete("/thread/:threadId", async (req, res) => {
 
 // ----------------------- POST THREAD -----------------------
 
-router.post("/chat", async (req, res) => {
+router.post("/chat", authMiddleware, async (req, res) => {
     let { threadId, message } = req.body;
 
     if (!message) {
         return res.status(400).json({ error: "Message is required" });
     }
-
 
     try {
         let thread = null;
@@ -90,7 +88,6 @@ router.post("/chat", async (req, res) => {
 
         if (!thread) {
             threadId = uuidv4();
-
             const aiTitle = await generateChatTitle(message);
 
             thread = new Thread({
@@ -99,55 +96,100 @@ router.post("/chat", async (req, res) => {
                 title: aiTitle || message.slice(0, 60),
                 messages: []
             });
-
             thread.messages.push({ role: "user", content: message });
-
-
-        }
-        else {
+        } else {
             thread.messages.push({ role: "user", content: message });
         }
 
+        // Set up headers for Server-Sent Events (SSE)
+        res.writeHead(200, {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive"
+        });
 
+        // Send initial threadId metadata to client
+        res.write(`data: ${JSON.stringify({ threadId: thread.threadId })}\n\n`);
 
         // 🛑 Crisis pre-check (important for mental health apps)
         if (/suicide|kill myself|end my life|want to die|no reason to live|hurt myself/i.test(message)) {
-    const safeReply =
-        "I'm really sorry you're feeling this way. You deserve support. Please consider reaching out to a trusted person or a local mental health helpline immediately.";
+            const safeReply =
+                "I'm really sorry you're feeling this way. You deserve support. Please consider reaching out to a trusted person or a local mental health helpline immediately.";
 
-    thread.messages.push({ role: "assistant", content: safeReply });
-    await thread.save();
-    return res.json({
-        reply: safeReply,
-        threadId: thread.threadId
-    });
+            thread.messages.push({ role: "assistant", content: safeReply });
+            await thread.save();
 
-}
+            res.write(`data: ${JSON.stringify({ content: safeReply })}\n\n`);
+            res.write("data: [DONE]\n\n");
+            res.end();
+            return;
+        }
 
-const assistantReply = await getOpenAIAPIResponse(thread.messages);
+        const stream = await streamOpenAIAPIResponse(thread.messages);
+        const reader = stream.getReader();
+        const decoder = new TextDecoder();
+        let assistantReply = "";
+        let buffer = "";
 
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-const finalReply =
-    assistantReply || "Sorry, I couldn't generate a response. Please try again.";
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop();
 
-thread.messages.push({
-    role: "assistant",
-    content: finalReply
-});
+            for (const line of lines) {
+                const cleanLine = line.trim();
+                if (!cleanLine) continue;
+                if (cleanLine === "data: [DONE]") continue;
 
-thread.updatedAt = new Date();
-await thread.save();
+                if (cleanLine.startsWith("data: ")) {
+                    try {
+                        const parsed = JSON.parse(cleanLine.slice(6));
+                        const content = parsed.choices?.[0]?.delta?.content || "";
+                        if (content) {
+                            assistantReply += content;
+                            res.write(`data: ${JSON.stringify({ content })}\n\n`);
+                        }
+                    } catch (e) {
+                        // ignore malformed chunks
+                    }
+                }
+            }
+        }
 
-res.json({
-    reply: finalReply,
-    threadId: thread.threadId
-});
+        if (buffer && buffer.startsWith("data: ") && buffer !== "data: [DONE]") {
+            try {
+                const parsed = JSON.parse(buffer.slice(6));
+                const content = parsed.choices?.[0]?.delta?.content || "";
+                if (content) {
+                    assistantReply += content;
+                    res.write(`data: ${JSON.stringify({ content })}\n\n`);
+                }
+            } catch (e) {
+                // ignore
+            }
+        }
 
+        const finalReply = assistantReply || "Sorry, I couldn't generate a response. Please try again.";
+        thread.messages.push({ role: "assistant", content: finalReply });
+        thread.updatedAt = new Date();
+        await thread.save();
+
+        res.write("data: [DONE]\n\n");
+        res.end();
 
     } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Something went wrong..." });
-}
+        console.log(err);
+        // If headers weren't sent yet, we can send 500. Otherwise we just end the stream
+        if (!res.headersSent) {
+            res.status(500).json({ error: "Something went wrong..." });
+        } else {
+            res.write(`data: ${JSON.stringify({ error: "Stream error occurred." })}\n\n`);
+            res.end();
+        }
+    }
 });
 
 

@@ -13,6 +13,10 @@ If the user expresses self-harm thoughts, encourage reaching out to trusted help
 `;
 
 const getOpenAIAPIResponse = async (messages) => {
+  const sanitizedMessages = messages.map(m => ({
+    role: m.role === "assistant" ? "assistant" : m.role,
+    content: m.content
+  }));
 
   const options = {
     method: "POST",
@@ -21,22 +25,17 @@ const getOpenAIAPIResponse = async (messages) => {
       "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
     },
     body: JSON.stringify({
-
-      model: "llama3-8b-8192",
-
-      // ⭐ CORRECT STRUCTURE
+      model: "llama-3.1-8b-instant",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        ...messages   // <-- conversation history
+        ...sanitizedMessages
       ],
-
       temperature: 0.7,
       max_tokens: 200
     })
   };
 
   try {
-
     const response = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
       options
@@ -57,6 +56,47 @@ const getOpenAIAPIResponse = async (messages) => {
 };
 
 
+export const streamOpenAIAPIResponse = async (messages) => {
+  const sanitizedMessages = messages.map(m => ({
+    role: m.role === "assistant" ? "assistant" : m.role,
+    content: m.content
+  }));
+
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: "llama-3.1-8b-instant",
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        ...sanitizedMessages
+      ],
+      temperature: 0.7,
+      max_tokens: 200,
+      stream: true,
+    }),
+  };
+
+  try {
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      options
+    );
+
+    if (!response.ok) {
+      throw new Error(`Groq API returned status ${response.status}`);
+    }
+
+    return response.body; // Returns the ReadableStream
+  } catch (err) {
+    console.error("OpenAI API Stream Error:", err.message);
+    throw err;
+  }
+};
+
 export const generateChatTitle = async (message) => {
     try {
 
@@ -69,7 +109,7 @@ export const generateChatTitle = async (message) => {
                     "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
                 },
                 body: JSON.stringify({
-                    model: "llama3-8b-8192",
+                    model: "llama-3.1-8b-instant",
                     messages: [
                         {
                             role: "system",

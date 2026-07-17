@@ -15,37 +15,42 @@ router.post("/", protect, async (req, res) => {
 
   try {
     const journal = await Journal.create({
-      userId: req.user.userId, 
+      userId: req.user.userId,
       mood,
       content,
     });
 
+    // ✅ FIX: streak update BEFORE res.json()
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const user = await User.findById(req.user.userId);
+
+    if (!user.lastJournalDate) {
+      user.streak = 1;
+    } else {
+      const last = new Date(user.lastJournalDate);
+      last.setHours(0, 0, 0, 0);
+
+      const diffDays = (today - last) / (1000 * 60 * 60 * 24);
+
+      if (diffDays === 1) {
+        user.streak += 1;
+      } else if (diffDays > 1) {
+        user.streak = 1;
+      }
+      // diffDays === 0 means already journaled today → keep streak as is
+    }
+
+    user.lastJournalDate = today;
+    await user.save();
+
+    // ✅ Return updated streak so frontend doesn't need a second API call
     res.status(201).json({
       message: "Journal saved",
       journal,
+      streak: user.streak,
     });
-    const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-const user = await User.findById(req.user.userId);
-
-if (!user.lastJournalDate) {
-  user.streak = 1;
-} else {
-  const last = new Date(user.lastJournalDate);
-  last.setHours(0, 0, 0, 0);
-
-  const diffDays = (today - last) / (1000 * 60 * 60 * 24);
-
-  if (diffDays === 1) {
-    user.streak += 1;
-  } else if (diffDays > 1) {
-    user.streak = 1;
-  }
-}
-
-user.lastJournalDate = today;
-await user.save();
 
   } catch (err) {
     res.status(500).json({ message: "Server error" });

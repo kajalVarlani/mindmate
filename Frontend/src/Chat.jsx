@@ -16,24 +16,9 @@ function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [prevChats, latestReply]);
 
-  // ✅ Typing animation for assistant reply
+  // ✅ Directly reflect the streaming reply as it updates in real-time
   useEffect(() => {
-    if (!reply) return;
-
-    setLatestReply("");
-
-    let i = 0;
-    const interval = setInterval(() => {
-      setLatestReply(prev => prev + reply[i]);
-      i++;
-
-      if (i >= reply.length) {
-        clearInterval(interval);
-        setLatestReply(null); // typing finished → rely on prevChats rendering
-      }
-    }, 15);
-
-    return () => clearInterval(interval);
+    setLatestReply(reply);
   }, [reply]);
 
   // ✅ Reset typing ONLY when starting new chat

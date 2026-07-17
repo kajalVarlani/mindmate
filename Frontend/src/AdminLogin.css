@@ -1,0 +1,161 @@
+.al-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(106, 191, 143, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(126, 184, 212, 0.05) 0%, transparent 50%);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.al-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(106, 191, 143, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 44px 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-lg);
+  animation: al-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+@keyframes al-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.al-icon {
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.al-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  text-shadow: 0 0 30px var(--accent-glow);
+  text-align: center;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.al-subtitle {
+  font-size: 13px;
+  color: var(--text-light);
+  text-align: center;
+  margin: 0 0 30px 0;
+  line-height: 1.4;
+}
+
+.al-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.al-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.al-input-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.al-input-group input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid rgba(106, 191, 143, 0.15);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.2);
+  outline: none;
+  transition: var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.al-input-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(106, 191, 143, 0.15);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* Button */
+.al-btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: var(--bg);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(106, 191, 143, 0.2);
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.al-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 30px rgba(106, 191, 143, 0.3);
+}
+
+.al-btn:active {
+  transform: translateY(0);
+}
+
+.al-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.al-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(10, 15, 13, 0.3);
+  border-top-color: var(--bg);
+  border-radius: 50%;
+  animation: al-spin 0.75s linear infinite;
+  display: inline-block;
+}
+
+@keyframes al-spin {
+  to { transform: rotate(360deg); }
+}
+
+.al-footer {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+}
+
+.al-back-home {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.al-back-home:hover {
+  color: var(--text);
+}
