@@ -58,6 +58,7 @@ function Chat() {
         ) : (
 
           <div className="emptyState">
+            <i className="fa-solid fa-seedling" style={{ fontSize: "64px", color: "var(--accent)", marginBottom: "1.5rem", filter: "drop-shadow(0 0 20px var(--accent-glow))" }}></i>
             <p>Start a conversation — we're here to listen.</p>
           </div>
 

@@ -32,11 +32,11 @@ export default function MoodAnalytics({ journals = [] }) {
   const total = Object.values(moodCounts).reduce((a, b) => a + b, 0);
 
   const moodLabels = {
-    happy: "😊 Happy",
-    sad: "😔 Sad",
-    anxious: "😟 Anxious",
-    calm: "😌 Calm",
-    angry: "😡 Angry",
+    happy: "Happy",
+    sad: "Sad",
+    anxious: "Anxious",
+    calm: "Calm",
+    angry: "Angry",
   };
 
   const moodColors = {

@@ -70,7 +70,7 @@ export default function TherapistRegister() {
         },
       });
       showToast("Application submitted! Our team will review your docs.", "success", 5000);
-      setTimeout(() => navigate("/therapist/login"), 2500);
+      setTimeout(() => navigate("/login"), 2500);
     } catch (err) {
       const msg = err.response?.data?.error || "Registration failed. Try again.";
       showToast(msg, "error");
@@ -209,7 +209,7 @@ export default function TherapistRegister() {
                     required
                   />
                   <span className="file-box-text">
-                    {profilePic ? profilePic.name : "📷 Choose Photo"}
+                    {profilePic ? profilePic.name : <><i className="fa-solid fa-camera"></i> Choose Photo</>}
                   </span>
                 </div>
               </div>
@@ -225,7 +225,7 @@ export default function TherapistRegister() {
                     required
                   />
                   <span className="file-box-text">
-                    {degreeDoc ? degreeDoc.name : "📄 Choose Certificate Document"}
+                    {degreeDoc ? degreeDoc.name : <><i className="fa-regular fa-file"></i> Choose Certificate Document</>}
                   </span>
                 </div>
               </div>
@@ -238,7 +238,7 @@ export default function TherapistRegister() {
         </form>
 
         <div className="tr-footer">
-          <p>Already have an approved account? <Link to="/therapist/login">Log in here</Link></p>
+          <p>Already have an approved account? <Link to="/login">Log in here</Link></p>
         </div>
       </div>
     </div>

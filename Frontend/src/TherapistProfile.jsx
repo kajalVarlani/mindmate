@@ -195,12 +195,12 @@ export default function TherapistProfile() {
             <h2>Dr. {therapist.name}</h2>
             <div className="rating">
               {therapist.reviewCount > 0 ? (
-                <>⭐ {therapist.rating.toFixed(1)} ({therapist.reviewCount} reviews)</>
+                <><i className="fa-solid fa-star" style={{color: '#f59e0b', marginRight: 4}}></i>{therapist.rating.toFixed(1)} ({therapist.reviewCount} reviews)</>
               ) : (
                 <span className="rating-new" style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--accent)', background: 'rgba(106, 191, 143, 0.1)', padding: '2px 10px', borderRadius: '12px' }}>New Therapist</span>
               )}
             </div>
-            <p className="exp">💼 {therapist.experience} Years Experience</p>
+            <p className="exp"><i className="fa-solid fa-briefcase" style={{marginRight: 5}}></i>{therapist.experience} Years Experience</p>
 
             <div className="specs">
               {therapist.specializations.map((spec) => (

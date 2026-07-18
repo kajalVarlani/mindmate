@@ -46,9 +46,14 @@ function Login() {
       const data = res.data;
 
       if (data.token) {
-        login(data.token, data.user?.name);
-        // small delay makes transition smoother
-        setTimeout(() => navigate("/"), 400);
+        const role = data.user?.role || "user";
+        login(data.token, data.user?.name, role);
+        // Redirect based on role
+        setTimeout(() => {
+          if (role === "therapist") navigate("/therapist/dashboard");
+          else if (role === "admin") navigate("/admin");
+          else navigate("/");
+        }, 400);
       }
     } catch (err) {
       const message = err.response?.data?.message || err.response?.data?.error || "Invalid credentials. Please try again.";
@@ -67,7 +72,7 @@ function Login() {
           <div className="login-overlay-content">
             <div className="spinner"></div>
             <h2>Logging you in...</h2>
-            <p>Preparing your safe space ✨</p>
+            <p>Preparing your safe space</p>
           </div>
         </div>
       )}

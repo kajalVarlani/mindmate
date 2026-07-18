@@ -56,7 +56,7 @@ export default function MyTherapist() {
 
         <div className="mt-nav-actions">
           <Link to="/therapists" className="mt-book-new-btn">
-            ➕ Schedule a New Session
+            <i className="fa-solid fa-plus" style={{marginRight: 6}}></i> Schedule a New Session
           </Link>
         </div>
       </header>
@@ -64,13 +64,13 @@ export default function MyTherapist() {
       {/* Tabs */}
       <div className="mt-tabs">
         <button className={activeTab === "scheduled" ? "active" : ""} onClick={() => setActiveTab("scheduled")}>
-          📅 Confirmed Sessions ({scheduledList.length})
+          <i className="fa-regular fa-calendar-check" style={{marginRight: 6}}></i> Confirmed Sessions ({scheduledList.length})
         </button>
         <button className={activeTab === "pending" ? "active" : ""} onClick={() => setActiveTab("pending")}>
-          ⏳ Awaiting Confirmation ({pendingList.length})
+          <i className="fa-regular fa-clock" style={{marginRight: 6}}></i> Awaiting Confirmation ({pendingList.length})
         </button>
         <button className={activeTab === "history" ? "active" : ""} onClick={() => setActiveTab("history")}>
-          📋 Past History ({historyList.length})
+          <i className="fa-solid fa-clock-rotate-left" style={{marginRight: 6}}></i> Past History ({historyList.length})
         </button>
       </div>
 
@@ -101,9 +101,9 @@ export default function MyTherapist() {
                     </div>
 
                     <div className="mt-card-details">
-                      <p>📅 <strong>Date:</strong> {new Date(session.scheduledAt).toLocaleDateString()}</p>
-                      <p>⏱️ <strong>Slot Time:</strong> {session.slotTime}</p>
-                      <p>⏳ <strong>Length:</strong> {session.duration} minutes</p>
+                      <p><i className="fa-regular fa-calendar" style={{marginRight: 6}}></i> <strong>Date:</strong> {new Date(session.scheduledAt).toLocaleDateString()}</p>
+                      <p><i className="fa-regular fa-clock" style={{marginRight: 6}}></i> <strong>Slot Time:</strong> {session.slotTime}</p>
+                      <p><i className="fa-solid fa-hourglass-half" style={{marginRight: 6}}></i> <strong>Length:</strong> {session.duration} minutes</p>
                     </div>
 
                     <div className="mt-consent-toggle-box">
@@ -122,7 +122,7 @@ export default function MyTherapist() {
                       className="mt-action-btn mt-join-chat-btn"
                       onClick={() => navigate(`/session/${session._id}`)}
                     >
-                      💬 Join Session Room
+                      <i className="fa-regular fa-comments"></i> Join Session Room
                     </button>
                   </div>
                 ))
@@ -144,8 +144,8 @@ export default function MyTherapist() {
                     </div>
 
                     <div className="mt-card-details">
-                      <p>📅 <strong>Requested Date:</strong> {new Date(session.scheduledAt).toLocaleDateString()}</p>
-                      <p>⏱️ <strong>Slot Time:</strong> {session.slotTime}</p>
+                      <p><i className="fa-regular fa-calendar" style={{marginRight: 6}}></i> <strong>Requested Date:</strong> {new Date(session.scheduledAt).toLocaleDateString()}</p>
+                      <p><i className="fa-regular fa-clock" style={{marginRight: 6}}></i> <strong>Slot Time:</strong> {session.slotTime}</p>
                       <span className="status-badge pending">Awaiting Approval</span>
                     </div>
 
@@ -180,11 +180,11 @@ export default function MyTherapist() {
                     </div>
 
                     <div className="mt-card-details">
-                      <p>📅 <strong>Date:</strong> {new Date(session.scheduledAt).toLocaleDateString()}</p>
-                      <p>⏱️ <strong>Slot Time:</strong> {session.slotTime}</p>
-                      <p>💳 <strong>Amount Paid:</strong> ₹{session.amountPaid}</p>
+                      <p><i className="fa-regular fa-calendar" style={{marginRight: 6}}></i> <strong>Date:</strong> {new Date(session.scheduledAt).toLocaleDateString()}</p>
+                      <p><i className="fa-regular fa-clock" style={{marginRight: 6}}></i> <strong>Slot Time:</strong> {session.slotTime}</p>
+                      <p><i className="fa-regular fa-credit-card" style={{marginRight: 6}}></i> <strong>Amount Paid:</strong> ₹{session.amountPaid}</p>
                       {session.status === "rejected" && (
-                        <p className="rejection-info">❌ Rejected. Refunded. Reason: <i>"{session.rejectionReason || "Unavailable"}"</i></p>
+                        <p className="rejection-info"><i className="fa-solid fa-circle-xmark" style={{marginRight: 6, color: '#ef4444'}}></i> Rejected. Refunded. Reason: <i>"{session.rejectionReason || "Unavailable"}"</i></p>
                       )}
                     </div>
 
@@ -193,7 +193,7 @@ export default function MyTherapist() {
                         className="mt-action-btn mt-history-chat-btn"
                         onClick={() => navigate(`/session/${session._id}`)}
                       >
-                        📂 View Session Chat Logs
+                        <i className="fa-regular fa-folder-open" style={{marginRight: 6}}></i> View Session Chat Logs
                       </button>
                     )}
                   </div>

@@ -41,9 +41,9 @@ export default function ConfirmModal({
   if (!isOpen) return null;
 
   const icons = {
-    danger:  "🗑️",
-    warning: "⚠️",
-    info:    "ℹ️",
+    danger:  <i className="fa-solid fa-trash-can"></i>,
+    warning: <i className="fa-solid fa-triangle-exclamation"></i>,
+    info:    <i className="fa-solid fa-circle-info"></i>,
   };
 
   return (

@@ -37,7 +37,7 @@ export default function TherapistLogin() {
   return (
     <div className="tl-wrapper">
       <div className="tl-card">
-        <div className="tl-icon">🩺</div>
+        <div className="tl-icon"><i className="fa-solid fa-user-doctor"></i></div>
         <h2 className="tl-title">Therapist Portal</h2>
         <p className="tl-subtitle">Log in to manage your bookings, schedule, and patient sessions.</p>
 

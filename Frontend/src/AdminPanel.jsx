@@ -37,7 +37,7 @@ export default function AdminPanel() {
       if (err.response?.status === 401 || err.response?.status === 403) {
         showToast("Session expired. Please log in again.", "error");
         logout();
-        navigate("/admin/login");
+        navigate("/login");
       } else {
         showToast("Failed to load therapist applications.", "error");
       }
@@ -144,24 +144,24 @@ export default function AdminPanel() {
       {/* Sidebar navigation */}
       <aside className="ap-sidebar">
         <div className="ap-logo">
-          <span>🛡️</span>
+          <i className="fa-solid fa-shield-halved" style={{fontSize: '22px', color: 'var(--accent)'}}></i>
           <h2>Admin Control</h2>
         </div>
 
         <nav className="ap-nav">
           <button className={activeTab === "applications" ? "active" : ""} onClick={() => setActiveTab("applications")}>
-            📩 Applications ({pendingApps.length})
+            <i className="fa-regular fa-envelope"></i> Applications ({pendingApps.length})
           </button>
           <button className={activeTab === "users" ? "active" : ""} onClick={() => setActiveTab("users")}>
-            👥 User Management ({users.length})
+            <i className="fa-solid fa-users"></i> User Management ({users.length})
           </button>
           <button className={activeTab === "stats" ? "active" : ""} onClick={() => setActiveTab("stats")}>
-            📊 System Analytics
+            <i className="fa-solid fa-chart-bar"></i> System Analytics
           </button>
         </nav>
 
         <button className="ap-logout-btn" onClick={handleLogout}>
-          🚪 Exit Portal
+          <i className="fa-solid fa-right-from-bracket"></i> Exit Portal
         </button>
       </aside>
 
@@ -243,10 +243,10 @@ export default function AdminPanel() {
                       </div>
 
                       <div className="app-card-details">
-                        <p>💼 <strong>Experience:</strong> {t.experience} Years</p>
-                        <p>🆔 <strong>License:</strong> {t.licenseNumber}</p>
-                        <p>🏷️ <strong>Specializations:</strong> {t.specializations?.join(", ")}</p>
-                        {t.bio && <p className="bio">📝 <i>"{t.bio}"</i></p>}
+                        <p><i className="fa-solid fa-briefcase"></i> <strong>Experience:</strong> {t.experience} Years</p>
+                        <p><i className="fa-solid fa-id-card"></i> <strong>License:</strong> {t.licenseNumber}</p>
+                        <p><i className="fa-solid fa-tags"></i> <strong>Specializations:</strong> {t.specializations?.join(", ")}</p>
+                        {t.bio && <p className="bio"><i className="fa-regular fa-file-lines"></i> <i>"{t.bio}"</i></p>}
                       </div>
 
                       <div className="app-card-actions">
@@ -256,7 +256,7 @@ export default function AdminPanel() {
                           rel="noopener noreferrer"
                           className="view-doc-btn"
                         >
-                          📄 View Degree Doc
+                          <i className="fa-regular fa-file-pdf"></i> View Degree Doc
                         </a>
                         <div className="decide-btns">
                           <button className="btn-approve" onClick={() => triggerApprove(t._id)}>
@@ -333,7 +333,7 @@ export default function AdminPanel() {
                         <tr key={u._id}>
                           <td><strong>{u.name}</strong></td>
                           <td>{u.email}</td>
-                          <td>🔥 {u.streak} Days</td>
+                          <td><i className="fa-solid fa-fire" style={{color:'#f97316', marginRight:4}}></i>{u.streak} Days</td>
                           <td>
                             <span className={`status-pill ${u.isActive !== false ? "approved" : "rejected"}`}>
                               {u.isActive !== false ? "Active" : "Deactivated"}
@@ -344,7 +344,7 @@ export default function AdminPanel() {
                               className={`action-toggle-btn ${u.isActive !== false ? "deactivate" : "activate"}`}
                               onClick={() => triggerDeactivate(u._id)}
                             >
-                              {u.isActive !== false ? "🚫 Deactivate" : "✅ Reactivate"}
+                              {u.isActive !== false ? <><i className="fa-solid fa-ban"></i> Deactivate</> : <><i className="fa-solid fa-rotate-right"></i> Reactivate</>}
                             </button>
                           </td>
                         </tr>
@@ -360,7 +360,7 @@ export default function AdminPanel() {
             <div className="ap-stats-section">
               <div className="stats-grid">
                 <div className="stats-card">
-                  <span className="stat-icon">👥</span>
+                  <span className="stat-icon"><i className="fa-solid fa-users"></i></span>
                   <div className="stat-info">
                     <span className="stat-label">Total Users</span>
                     <span className="stat-val">{stats.totalUsers}</span>
@@ -368,7 +368,7 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="stats-card">
-                  <span className="stat-icon">🩺</span>
+                  <span className="stat-icon"><i className="fa-solid fa-user-doctor"></i></span>
                   <div className="stat-info">
                     <span className="stat-label">Approved Therapists</span>
                     <span className="stat-val">{stats.totalTherapists}</span>
@@ -376,7 +376,7 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="stats-card">
-                  <span className="stat-icon">📅</span>
+                  <span className="stat-icon"><i className="fa-regular fa-calendar-check"></i></span>
                   <div className="stat-info">
                     <span className="stat-label">Completed Sessions</span>
                     <span className="stat-val">{stats.totalSessions}</span>
@@ -384,7 +384,7 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="stats-card">
-                  <span className="stat-icon">💰</span>
+                  <span className="stat-icon"><i className="fa-solid fa-indian-rupee-sign"></i></span>
                   <div className="stat-info">
                     <span className="stat-label">Platform Cut Revenue (10%)</span>
                     <span className="stat-val">₹{stats.totalRevenue}</span>

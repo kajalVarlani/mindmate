@@ -46,7 +46,7 @@ export default function TherapistDashboard() {
       if (err.response?.status === 401 || err.response?.status === 403) {
         showToast("Session expired. Please log in again.", "error");
         logout();
-        navigate("/therapist/login");
+        navigate("/login");
       } else {
         showToast("Failed to load profile. Please refresh.", "error");
       }
@@ -162,9 +162,11 @@ export default function TherapistDashboard() {
       {/* Sidebar Navigation */}
       <aside className="td-sidebar">
         <div className="td-logo">
-          <span>🧠</span>
-          <h2>MindMate</h2>
-          <span className="logo-badge">Therapist</span>
+          <i className="fa-solid fa-brain td-logo-icon"></i>
+          <div className="td-logo-text">
+            <h2>MindMate</h2>
+            <span className="logo-badge">Therapist</span>
+          </div>
         </div>
 
         {profile && (
@@ -173,7 +175,7 @@ export default function TherapistDashboard() {
             <h3>Dr. {profile.name}</h3>
             <p>
               {profile.reviewCount > 0 ? (
-                `⭐ ${profile.rating.toFixed(1)} (${profile.reviewCount} reviews)`
+                <><i className="fa-solid fa-star" style={{color: '#f59e0b', marginRight: 4}}></i>{profile.rating.toFixed(1)} ({profile.reviewCount} reviews)</>
               ) : (
                 "New Therapist (No reviews yet)"
               )}
@@ -183,21 +185,21 @@ export default function TherapistDashboard() {
 
         <nav className="td-nav">
           <button className={activeTab === "pending" ? "active" : ""} onClick={() => setActiveTab("pending")}>
-            📩 Pending Requests ({pendingList.length})
+            <i className="fa-regular fa-envelope"></i> Pending Requests ({pendingList.length})
           </button>
           <button className={activeTab === "active" ? "active" : ""} onClick={() => setActiveTab("active")}>
-            📅 Scheduled Sessions ({activeList.length})
+            <i className="fa-regular fa-calendar-check"></i> Scheduled Sessions ({activeList.length})
           </button>
           <button className={activeTab === "completed" ? "active" : ""} onClick={() => setActiveTab("completed")}>
-            ✅ History & Earnings ({completedList.length})
+            <i className="fa-solid fa-check-double"></i> History &amp; Earnings ({completedList.length})
           </button>
           <button className={activeTab === "schedule" ? "active" : ""} onClick={() => setActiveTab("schedule")}>
-            ⚙️ Block Schedule Dates
+            <i className="fa-solid fa-gear"></i> Block Schedule Dates
           </button>
         </nav>
 
         <button className="td-logout-btn" onClick={handleLogout}>
-          🚪 Log Out
+          <i className="fa-solid fa-right-from-bracket"></i> Log Out
         </button>
       </aside>
 
@@ -233,7 +235,7 @@ export default function TherapistDashboard() {
                     Cancel
                   </button>
                   <button type="submit" className="m-confirm danger">
-                    Confirm Reject & Refund
+                    Confirm Reject &amp; Refund
                   </button>
                 </div>
               </form>
@@ -270,9 +272,9 @@ export default function TherapistDashboard() {
                       <span className="date">{new Date(session.scheduledAt).toLocaleDateString()}</span>
                     </div>
                     <h4>Patient: {session.userId?.name}</h4>
-                    <p className="time">⏱️ Time slot: {session.slotTime}</p>
+                    <p className="time"><i className="fa-regular fa-clock"></i> Time slot: {session.slotTime}</p>
                     {session.userNote && (
-                      <p className="note">💬 Note: "{session.userNote}"</p>
+                      <p className="note"><i className="fa-regular fa-comment"></i> Note: "{session.userNote}"</p>
                     )}
                     <div className="card-actions-row">
                       <button className="btn btn-accept" onClick={() => triggerAccept(session._id)}>
@@ -300,13 +302,13 @@ export default function TherapistDashboard() {
                       <span className="date">{new Date(session.scheduledAt).toLocaleDateString()}</span>
                     </div>
                     <h4>Patient: {session.userId?.name}</h4>
-                    <p className="time">⏱️ Slot Time: {session.slotTime}</p>
+                    <p className="time"><i className="fa-regular fa-clock"></i> Slot Time: {session.slotTime}</p>
                     
                     <button
                       className="btn btn-chat-link"
                       onClick={() => navigate(`/session/${session._id}`)}
                     >
-                      💬 Open Session Room
+                      <i className="fa-regular fa-comments"></i> Open Session Room
                     </button>
                   </div>
                 ))
@@ -326,7 +328,7 @@ export default function TherapistDashboard() {
                       <span className="date">{new Date(session.scheduledAt).toLocaleDateString()}</span>
                     </div>
                     <h4>Patient: {session.userId?.name}</h4>
-                    <p className="time">⏱️ Slot Time: {session.slotTime}</p>
+                    <p className="time"><i className="fa-regular fa-clock"></i> Slot Time: {session.slotTime}</p>
                     
                     <div className="earnings-section">
                       <p>Consultation Fee: <strong>₹{session.amountPaid}</strong></p>
@@ -361,7 +363,7 @@ export default function TherapistDashboard() {
                     required
                   />
                   <button type="submit" disabled={scheduleLoading}>
-                    {scheduleLoading ? "Blocking..." : "🚫 Block This Date"}
+                    {scheduleLoading ? "Blocking..." : <><i className="fa-solid fa-ban"></i> Block This Date</>}
                   </button>
                 </form>
               </div>
@@ -374,7 +376,7 @@ export default function TherapistDashboard() {
                   <div className="blocked-list">
                     {blockedDates.map((date) => (
                       <div key={date} className="blocked-date-tag">
-                        <span>📅 {new Date(date).toLocaleDateString(undefined, { weekday: "short", year: "numeric", month: "short", day: "numeric" })}</span>
+                        <span><i className="fa-regular fa-calendar-xmark"></i> {new Date(date).toLocaleDateString(undefined, { weekday: "short", year: "numeric", month: "short", day: "numeric" })}</span>
                         <button type="button" onClick={() => handleUnblockDate(date)}>
                           Unblock
                         </button>

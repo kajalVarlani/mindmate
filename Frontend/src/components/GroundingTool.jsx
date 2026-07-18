@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import './GroundingTool.css';
 
 const steps = [
-  { id: 5, sense: "Sight", instruction: "List 5 things you can see:", icon: "👁️" },
-  { id: 4, sense: "Touch", instruction: "List 4 things you can feel:", icon: "🖐️" },
-  { id: 3, sense: "Sound", instruction: "List 3 things you hear:", icon: "👂" },
-  { id: 2, sense: "Smell", instruction: "List 2 things you smell:", icon: "👃" },
-  { id: 1, sense: "Taste", instruction: "List 1 thing you can taste:", icon: "👅" }
+  { id: 5, sense: "Sight", instruction: "List 5 things you can see:", icon: <i className="fa-regular fa-eye" style={{marginRight: 8}}></i> },
+  { id: 4, sense: "Touch", instruction: "List 4 things you can feel:", icon: <i className="fa-regular fa-hand" style={{marginRight: 8}}></i> },
+  { id: 3, sense: "Sound", instruction: "List 3 things you hear:", icon: <i className="fa-solid fa-volume-high" style={{marginRight: 8}}></i> },
+  { id: 2, sense: "Smell", instruction: "List 2 things you smell:", icon: <i className="fa-solid fa-leaf" style={{marginRight: 8}}></i> },
+  { id: 1, sense: "Taste", instruction: "List 1 thing you can taste:", icon: <i className="fa-solid fa-utensils" style={{marginRight: 8}}></i> }
 ];
 
 export default function GroundingTool() {
@@ -40,7 +40,7 @@ export default function GroundingTool() {
   if (isFinished) {
     return (
       <div className="grounding-finished">
-        <div className="glow-icon">🌿</div>
+        <div className="glow-icon"><i className="fa-solid fa-spa"></i></div>
         <h2 className="brand-glow">You are present.</h2>
         <p>Your mind is here, in the now. Carry this peace with you.</p>
         <button className="primary-btn" onClick={() => window.location.reload()}>Finish Session</button>
@@ -52,7 +52,9 @@ export default function GroundingTool() {
     <div className="grounding-tool">
       <div className="step-header">
         <span className="step-count">Step {currentStep + 1} of 5</span>
-        <h2 className="sense-title">{step.icon} {step.id} Things you {step.sense}</h2>
+        <h2 className="sense-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {step.icon} {step.id} Things you {step.sense}
+        </h2>
         <p className="sense-instruction">{step.instruction}</p>
       </div>
 

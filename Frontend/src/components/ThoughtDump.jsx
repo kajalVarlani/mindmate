@@ -31,7 +31,7 @@ export default function ThoughtDump() {
   if (isDone) {
     return (
       <div className="dump-finished">
-        <div className="dissolve-animation">☁️</div>
+        <div className="dissolve-animation"><i className="fa-solid fa-cloud"></i></div>
         <h2 className="brand-glow">It's gone now.</h2>
         <p>You don't need to carry every thought with you. You are lighter now.</p>
         <button className="primary-btn" onClick={() => window.location.reload()}>New Session</button>
@@ -43,7 +43,7 @@ export default function ThoughtDump() {
     <div className="thought-dump">
       {!isStarted ? (
         <div className="dump-intro">
-          <div className="sense-icon">🧠</div>
+          <div className="sense-icon"><i className="fa-solid fa-brain"></i></div>
           <h2>The Void</h2>
           <p>You have 2 minutes to write anything on your mind. <br/> Once the timer ends, the text vanishes forever.</p>
           <button className="primary-btn" onClick={() => setIsStarted(true)}>Start Timer</button>

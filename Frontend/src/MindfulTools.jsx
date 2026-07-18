@@ -45,7 +45,7 @@ export default function MindfulTools() {
         <div className="tools-grid">
           {/* Card 1 */}
           <div className="tool-card active-card" onClick={() => setActiveTool("breathing")}>
-            <div className="tool-icon-box">🫁</div>
+            <div className="tool-icon-box"><i className="fa-solid fa-lungs"></i></div>
             <h3>Guided Breathing</h3>
             <p>Master the 4-4-6 technique to calm your nervous system.</p>
             <span className="tool-status">Start Practice</span>
@@ -53,7 +53,7 @@ export default function MindfulTools() {
 
           {/* Card 2 */}
           <div className="tool-card active-card" onClick={() => setActiveTool("grounding")}>
-            <div className="tool-icon-box">🌱</div>
+            <div className="tool-icon-box"><i className="fa-solid fa-seedling"></i></div>
             <h3>5-4-3-2-1 Grounding</h3>
             <p>Reconnect with the present moment using your five senses.</p>
             <span className="tool-status">Start Practice</span>
@@ -61,7 +61,7 @@ export default function MindfulTools() {
 
           {/* Card 3 */}
           <div className="tool-card active-card" onClick={() => setActiveTool("dump")}>
-            <div className="tool-icon-box">🧠</div>
+            <div className="tool-icon-box"><i className="fa-solid fa-brain"></i></div>
             <h3>Thought Dump</h3>
             <p>Release heavy thoughts into the void. No saving, no judging.</p>
             <span className="tool-status">Start Practice</span>

@@ -36,7 +36,7 @@ export default function AdminLogin() {
   return (
     <div className="al-wrapper">
       <div className="al-card">
-        <div className="al-icon">🛡️</div>
+        <div className="al-icon"><i className="fa-solid fa-shield-halved"></i></div>
         <h2 className="al-title">MindMate Control</h2>
         <p className="al-subtitle">Admin authentication is required to access system settings and approvals.</p>
 

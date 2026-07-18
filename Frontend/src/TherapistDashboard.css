@@ -30,8 +30,16 @@
   margin-bottom: 36px;
 }
 
-.td-logo span {
+.td-logo-icon {
   font-size: 24px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.td-logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .td-logo h2 {
@@ -41,6 +49,7 @@
   text-shadow: 0 0 20px var(--accent-glow);
   margin: 0;
   letter-spacing: -0.5px;
+  line-height: 1;
 }
 
 .logo-badge {
@@ -50,8 +59,8 @@
   font-weight: 800;
   padding: 2px 6px;
   border-radius: var(--radius-sm);
-  margin-left: 8px;
   text-transform: uppercase;
+  width: fit-content;
 }
 
 .td-profile-summary {

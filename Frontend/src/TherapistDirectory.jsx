@@ -61,7 +61,7 @@ export default function TherapistDirectory() {
                 className={selectedSpec === spec ? "active" : ""}
                 onClick={() => setSelectedSpec(spec)}
               >
-                {spec === "All" ? "🌐 Show All" : spec}
+                {spec === "All" ? <><i className="fa-solid fa-earth-americas" style={{marginRight: 6}}></i>Show All</> : spec}
               </button>
             ))}
           </div>
@@ -76,7 +76,7 @@ export default function TherapistDirectory() {
             </div>
           ) : fetchError ? (
             <div className="tdir-empty">
-              <p>⚠️ Unable to load therapist directory right now. Please try again in a moment.</p>
+              <p><i className="fa-solid fa-triangle-exclamation" style={{marginRight: 6}}></i> Unable to load therapist directory right now. Please try again in a moment.</p>
               <button className="tdir-retry-btn" onClick={fetchTherapists}>Retry</button>
             </div>
           ) : therapists.length === 0 ? (
@@ -91,7 +91,7 @@ export default function TherapistDirectory() {
                     <img src={getImageUrl(t.profilePicUrl)} alt={t.name} />
                     <div className="tdir-rating">
                       {t.reviewCount > 0 ? (
-                        <>⭐ {t.rating.toFixed(1)} <span>({t.reviewCount})</span></>
+                        <><i className="fa-solid fa-star" style={{color: '#f59e0b', marginRight: 3}}></i>{t.rating.toFixed(1)} <span>({t.reviewCount})</span></>
                       ) : (
                         <span className="rating-new" style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--accent)', background: 'rgba(106, 191, 143, 0.1)', padding: '2px 8px', borderRadius: '12px' }}>New</span>
                       )}
@@ -100,7 +100,7 @@ export default function TherapistDirectory() {
 
                   <div className="tdir-card-body">
                     <h3>Dr. {t.name}</h3>
-                    <p className="experience">💼 {t.experience} Years Experience</p>
+                    <p className="experience"><i className="fa-solid fa-briefcase" style={{marginRight: 5}}></i>{t.experience} Years Experience</p>
                     <p className="bio">{t.bio ? t.bio.slice(0, 100) + "..." : "No bio available."}</p>
                     
                     <div className="specializations-tags">

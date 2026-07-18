@@ -109,7 +109,7 @@ export default function Journal() {
                     <h1>My Journal Sanctuary</h1>
                     <p className="header-subtitle">Capture your thoughts, find your clarity.</p>
                     <div className="streak-badge">
-                        🔥 {streak} day streak
+                        <i className="fa-solid fa-fire" style={{color: "#eab308", marginRight: 4}}></i> {streak} day streak
                     </div>
 
                 </header>
@@ -123,11 +123,11 @@ export default function Journal() {
                             <div className="input-group">
                                 <select value={mood} onChange={(e) => setMood(e.target.value)}>
                                     <option value="">Select mood</option>
-                                    <option value="happy">😊 Happy</option>
-                                    <option value="sad">😔 Sad</option>
-                                    <option value="anxious">😟 Anxious</option>
-                                    <option value="calm">😌 Calm</option>
-                                    <option value="angry">😡 Angry</option>
+                                    <option value="happy">Happy</option>
+                                    <option value="sad">Sad</option>
+                                    <option value="anxious">Anxious</option>
+                                    <option value="calm">Calm</option>
+                                    <option value="angry">Angry</option>
                                 </select>
                             </div>
 

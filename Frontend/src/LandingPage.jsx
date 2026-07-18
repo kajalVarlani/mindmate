@@ -1,14 +1,22 @@
 import "./LandingPage.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import Home from "./Home.jsx";
 import { useAuth } from "./Context/AuthContext";
 export default function LandingPage() {
-    const { isAuthenticated, loading } = useAuth();
+    const { isAuthenticated, loading, userRole } = useAuth();
     const navigate = useNavigate();
-    if (loading) return null; 
-    if (isAuthenticated) {
+    if (loading) return null;
+
+    // Role-based redirect: therapists and admins should never see the user home
+    if (isAuthenticated && userRole === "therapist") {
+        return <Navigate to="/therapist/dashboard" replace />;
+    }
+    if (isAuthenticated && userRole === "admin") {
+        return <Navigate to="/admin" replace />;
+    }
+    if (isAuthenticated && userRole === "user") {
         return (
             <div className="landing">
                 <Navbar />
@@ -50,24 +58,21 @@ export default function LandingPage() {
 
                 <div className="pillars-grid">
                     <div className="feature-card">
-                        <div className="icon-box">💬</div>
+                        <div className="icon-box"><i className="fa-regular fa-comments"></i></div>
                         <h3>AI Companion</h3>
                         <p>A non-judgmental companion to talk through heavy emotions, anytime you need.</p>
-                       
                     </div>
 
                     <div className="feature-card highlighted">
-                        <div className="icon-box">🌿</div>
+                        <div className="icon-box"><i className="fa-solid fa-book-open"></i></div>
                         <h3>Thought Journal</h3>
                         <p>Release your thoughts in a safe, encrypted digital diary. Track your growth over time.</p>
-                      
                     </div>
 
                     <div className="feature-card">
-                        <div className="icon-box">🧘</div>
+                        <div className="icon-box"><i className="fa-solid fa-spa"></i></div>
                         <h3>Mindful Tools</h3>
                         <p>Simple exercises designed to ground you when life feels a bit too loud.</p>
-                     
                     </div>
                 </div>
             </section>

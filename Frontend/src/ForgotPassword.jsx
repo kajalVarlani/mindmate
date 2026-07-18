@@ -72,7 +72,7 @@ export default function ForgotPassword() {
       <div className="fp-card">
 
         {/* Icon */}
-        <div className="fp-icon">🔑</div>
+        <div className="fp-icon"><i className="fa-solid fa-key"></i></div>
 
         {/* Step indicator */}
         <div className="fp-steps">
@@ -156,7 +156,7 @@ export default function ForgotPassword() {
                     onClick={() => setShowPass(!showPass)}
                     tabIndex={-1}
                   >
-                    {showPass ? "🙈" : "👁️"}
+                    {showPass ? <i className="fa-regular fa-eye-slash"></i> : <i className="fa-regular fa-eye"></i>}
                   </button>
                 </div>
               </div>
