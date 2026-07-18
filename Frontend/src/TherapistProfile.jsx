@@ -133,7 +133,7 @@ export default function TherapistProfile() {
               });
 
               showToast("Session booked successfully!", "success");
-              navigate("/my-therapist");
+              window.location.href = "/my-therapist";
             } catch (err) {
               showToast(err.response?.data?.error || "Payment verification failed", "error");
             }
