@@ -2,6 +2,8 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import Therapist from "../models/Therapist.js";
+import Admin from "../models/Admin.js";
 import OTP from "../models/OTP.js";
 import { sendOTP, sendPasswordResetOTP } from "../utils/sendEmail.js";
 import rateLimit from "express-rate-limit";
@@ -9,14 +11,14 @@ import rateLimit from "express-rate-limit";
 const router = express.Router();
 
 const otpLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 3, // Limit each IP to 3 OTP requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 100, // Increased for development/testing
   message: { error: "Too many OTP requests from this IP, please try again after 15 minutes." }
 });
 
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 login requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 100, // Increased for development/testing
   message: { error: "Too many login attempts from this IP, please try again after 15 minutes." }
 });
 
@@ -70,46 +72,107 @@ router.post("/signup", async (req, res) => {
     name,
     email,
     passwordHash: hash,
+    role: "user",
   });
 
   await OTP.findOneAndDelete({ email });
 
   const token = jwt.sign(
-    { userId: user._id, name: user.name },
+    { userId: user._id, name: user.name, role: "user" },
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
 
-  res.json({ 
-  token, 
-  user: { name: user.name } 
-});
+  res.json({
+    token,
+    user: { name: user.name, role: "user" }
+  });
 });
 
-/* LOGIN */
+/**
+ * UNIFIED LOGIN
+ *
+ * Lookup order:
+ *  1. User table (covers regular users AND therapists — both have credentials here)
+ *     - If user.role === "therapist", also verify the Therapist document status.
+ *  2. Admin table (separate collection, separate login credentials)
+ */
 router.post("/login", loginLimiter, async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
-  if (!user) return res.status(400).json({ error: "Invalid credentials" });
-  if (user.isActive === false) return res.status(403).json({ error: "Your account has been deactivated." });
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
 
-  const ok = await bcrypt.compare(password, user.passwordHash);
-  if (!ok) return res.status(400).json({ error: "Invalid credentials" });
+  try {
+    // ── 1. Check the users table first ─────────────────────────────────────────
+    const user = await User.findOne({ email });
 
-const token = jwt.sign(
-  { userId: user._id, name: user.name },
-  process.env.JWT_SECRET,
-  { expiresIn: "7d" }
-);
+    if (user) {
+      if (user.isActive === false) {
+        return res.status(403).json({ error: "Your account has been deactivated." });
+      }
 
-res.json({ 
-  token, 
-  user: { name: user.name }
+      const ok = await bcrypt.compare(password, user.passwordHash);
+      if (!ok) return res.status(400).json({ error: "Invalid credentials" });
+
+      // If this user is a therapist, verify their application status
+      if (user.role === "therapist") {
+        const therapist = await Therapist.findById(user._id);
+        if (therapist) {
+          if (therapist.status === "pending") {
+            return res.status(403).json({
+              error: "Your therapist application is still under review. We will notify you via email once approved.",
+            });
+          }
+          if (therapist.status === "rejected") {
+            return res.status(403).json({
+              error: `Your therapist application has been declined. Reason: ${therapist.rejectionReason || "Credentials validation failed"}`,
+            });
+          }
+        }
+      }
+
+      const token = jwt.sign(
+        { userId: user._id, name: user.name, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      return res.json({
+        token,
+        user: { name: user.name, role: user.role }
+      });
+    }
+
+    // ── 2. Check the admin table ────────────────────────────────────────────────
+    const admin = await Admin.findOne({ email });
+    if (admin) {
+      const ok = await bcrypt.compare(password, admin.passwordHash);
+      if (!ok) return res.status(400).json({ error: "Invalid credentials" });
+
+      const token = jwt.sign(
+        { userId: admin._id, email: admin.email, role: "admin" },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      return res.json({
+        token,
+        user: { name: "Administrator", role: "admin" }
+      });
+    }
+
+    // No match found in either table
+    return res.status(400).json({ error: "Invalid credentials" });
+
+  } catch (err) {
+    console.error("Login error:", err);
+    return res.status(500).json({ error: "Server error during login" });
+  }
 });
-});
 
-/* FORGOT PASSWORD — send OTP to registered email */
+/* FORGOT PASSWORD */
 router.post("/forgot-password", otpLimiter, async (req, res) => {
   const { email } = req.body;
 
@@ -120,7 +183,6 @@ router.post("/forgot-password", otpLimiter, async (req, res) => {
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-  // Reuse OTP collection (delete any existing OTP for this email first)
   await OTP.findOneAndDelete({ email });
   await OTP.create({ email, otp });
 
@@ -130,7 +192,7 @@ router.post("/forgot-password", otpLimiter, async (req, res) => {
   res.json({ message: "Password reset OTP sent to your email" });
 });
 
-/* RESET PASSWORD — verify OTP + set new password */
+/* RESET PASSWORD */
 router.post("/reset-password", async (req, res) => {
   const { email, otp, newPassword } = req.body;
 
@@ -150,7 +212,7 @@ router.post("/reset-password", async (req, res) => {
   const hash = await bcrypt.hash(newPassword, 10);
 
   await User.findOneAndUpdate({ email }, { passwordHash: hash });
-  await OTP.findOneAndDelete({ email }); // Clean up used OTP
+  await OTP.findOneAndDelete({ email });
 
   res.json({ message: "Password reset successfully. You can now log in." });
 });

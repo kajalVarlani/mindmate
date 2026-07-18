@@ -22,7 +22,7 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 // GET own profile info
 router.get("/me", async (req, res) => {
   try {
-    const therapist = await Therapist.findById(req.user.id).select("-passwordHash");
+    const therapist = await Therapist.findById(req.user.id);
     if (!therapist) {
       return res.status(404).json({ error: "Therapist profile not found" });
     }

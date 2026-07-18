@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 
 const therapistSchema = new mongoose.Schema(
   {
+    // _id is explicitly set to match the linked User's _id — so Therapist.findById(userId) works directly
+    _id: { type: mongoose.Schema.Types.ObjectId, required: true },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, lowercase: true },
-    passwordHash: { type: String, required: true },
     specializations: [{ type: String }],
     bio: { type: String },
     experience: { type: Number },
@@ -16,12 +17,12 @@ const therapistSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
-    price: { type: Number }, // Per-session fee
-    sessionDuration: { type: Number, default: 45 }, // Minutes: 30 / 45 / 60
+    price: { type: Number },
+    sessionDuration: { type: Number, default: 45 },
     weeklySchedule: [
       {
-        day: { type: Number, required: true }, // 0=Sun, 1=Mon, ..., 6=Sat
-        slots: [{ type: String }], // e.g. ["09:00", "10:00", "11:00"]
+        day: { type: Number, required: true },
+        slots: [{ type: String }],
       },
     ],
     bankDetails: {

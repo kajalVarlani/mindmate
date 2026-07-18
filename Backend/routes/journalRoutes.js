@@ -15,7 +15,7 @@ router.post("/", protect, async (req, res) => {
 
   try {
     const journal = await Journal.create({
-      userId: req.user.userId,
+      userId: req.user.id,
       mood,
       content,
     });
@@ -24,7 +24,7 @@ router.post("/", protect, async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.user.id);
 
     if (!user.lastJournalDate) {
       user.streak = 1;
@@ -61,7 +61,7 @@ router.post("/", protect, async (req, res) => {
 router.get("/", protect, async (req, res) => {
   try {
     const journals = await Journal.find({
-      userId: req.user.userId, // 🔐 only logged-in user's data
+      userId: req.user.id, // 🔐 only logged-in user's data
     }).sort({ createdAt: -1 }); // latest first
 
     res.status(200).json(journals);
@@ -76,7 +76,7 @@ router.delete("/:id", protect, async (req, res) => {
   try {
     const journal = await Journal.findOne({
       _id: journalId,
-      userId: req.user.userId, // 🔐 ownership check
+      userId: req.user.id, // 🔐 ownership check
     });
 
     if (!journal) {

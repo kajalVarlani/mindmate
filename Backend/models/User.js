@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  role: {
+    type: String,
+    enum: ["user", "therapist"],
+    default: "user"
+  },
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

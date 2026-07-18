@@ -75,6 +75,10 @@ router.put("/therapist/:id/approve", async (req, res) => {
     therapist.rejectionReason = undefined;
     await therapist.save();
 
+    // Promote the linked User record to role="therapist"
+    // therapist._id === user._id by design
+    await User.findByIdAndUpdate(therapist._id, { role: "therapist" });
+
     // Send email
     await sendTherapistApprovalEmail(therapist.email, therapist.name);
 
@@ -103,6 +107,9 @@ router.put("/therapist/:id/reject", async (req, res) => {
     therapist.rejectionReason = reason;
     await therapist.save();
 
+    // Demote the linked User record back to role="user"
+    await User.findByIdAndUpdate(therapist._id, { role: "user" });
+
     // Send email
     await sendTherapistRejectionEmail(therapist.email, therapist.name, reason);
 
@@ -113,9 +120,11 @@ router.put("/therapist/:id/reject", async (req, res) => {
   }
 });
 
-// GET all users
+// GET all users (users + therapists — all share the same users table)
 router.get("/users", async (req, res) => {
   try {
+    // Return all users including those who are therapists.
+    // The "role" field differentiates them.
     const users = await User.find({}).select("-passwordHash").sort({ createdAt: -1 });
     res.json(users);
   } catch (err) {
@@ -148,7 +157,8 @@ router.put("/user/:id/deactivate", async (req, res) => {
 // GET platform stats
 router.get("/stats", async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments({});
+    // Count only regular users (not therapists) for the "users" stat
+    const totalUsers = await User.countDocuments({ role: "user" });
     const totalTherapists = await Therapist.countDocuments({ status: "approved" });
     const totalSessions = await Session.countDocuments({ status: "completed" });
 
