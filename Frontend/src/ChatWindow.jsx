@@ -1,7 +1,8 @@
+import { Link } from "react-router-dom";
 import "./ChatWindow.css";
 import Chat from "./Chat.jsx";
 import { MyContext } from "./MyContext.jsx";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 
 function ChatWindow() {
 
@@ -17,6 +18,15 @@ function ChatWindow() {
   } = useContext(MyContext);
 
   const [loading, setLoading] = useState(false);
+  const textareaRef = useRef(null);
+
+  // Auto-resize input area dynamically as user types
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
+  }, [prompt]);
 
   // ✅ Clear UI on new chat
   useEffect(() => {
@@ -56,11 +66,9 @@ function ChatWindow() {
           MindMate <i className="fa-solid fa-chevron-down"></i>
         </span>
 
-        <div className="userIconDiv">
-          <span className="userIcon">
-            <i className="fa-solid fa-user"></i>
-          </span>
-        </div>
+        <Link to="/" className="chat-back-home-btn">
+          <i className="fa-solid fa-arrow-left"></i> Home
+        </Link>
       </div>
 
       {/* MESSAGES */}
@@ -82,11 +90,34 @@ function ChatWindow() {
       <div className="chatInput">
         <div className="inputBox">
 
-          <input
+          <textarea
+            ref={textareaRef}
             placeholder="How are you feeling today?"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            rows={1}
+            style={{
+              flexGrow: 1,
+              padding: "12px 18px",
+              border: "1.5px solid rgba(106, 191, 143, 0.15)",
+              borderRadius: "var(--radius-sm)",
+              fontSize: "15px",
+              color: "var(--text)",
+              background: "rgba(0, 0, 0, 0.2)",
+              outline: "none",
+              resize: "none",
+              overflowY: "hidden",
+              transition: "var(--transition-fast)",
+              boxSizing: "border-box",
+              fontFamily: "inherit",
+              lineHeight: "1.5"
+            }}
           />
 
           <button className="sendBtn" onClick={handleSend}>

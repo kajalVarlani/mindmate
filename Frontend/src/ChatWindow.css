@@ -109,42 +109,30 @@
   gap: 0.75rem;
 }
 
-/* User icon with pulse animation */
-.userIcon {
-  height: 48px;
-  width: 48px;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-  border-radius: 50%;
+/* Back to home button inside chat navbar */
+.chat-back-home-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(106, 191, 143, 0.2);
+  color: var(--text);
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 0 30px var(--accent-glow), 0 4px 16px rgba(106, 191, 143, 0.3);
-
-  font-weight: 700;
-  font-size: 16px;
-  flex-shrink: 0;
-  position: relative;
-
+  gap: 8px;
+  text-decoration: none;
+  transition: var(--transition-fast);
 }
 
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 0 0 30px var(--accent-glow), 0 4px 16px rgba(106, 191, 143, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 50px var(--accent-glow), 0 8px 24px rgba(106, 191, 143, 0.5);
-  }
+.chat-back-home-btn:hover {
+  background: rgba(106, 191, 143, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
 }
-
-.userIcon:hover {
-  transform: scale(1.1) rotate(5deg);
-}
-
-.userIcon:active {
-  transform: scale(1.05) rotate(0deg);
-}
+/* End of back button styles */
 
 /* Messages area - scrollable content */
 .messagesArea {

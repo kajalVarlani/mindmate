@@ -1,62 +1,77 @@
 /* src/components/BreathingWidget.css */
-:root{
-  --primary: #2b6a5a;
-  --primary-soft: #dff3ec;
-  --muted: #6d857a;
+:root {
+  --primary: #6abf8f;        /* Matches --accent */
+  --primary-glow: rgba(106, 191, 143, 0.3);
+  --primary-soft: rgba(106, 191, 143, 0.08);
+  --muted: #8b9d95;          /* Matches --muted */
+  --text: #e8f1ed;           /* Matches --text */
 }
 
-.breathing-widget{
+.breathing-widget {
   width: 100%;
   max-width: 420px;
   margin: 36px auto;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:14px;
-  color:var(--muted);
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  color: var(--muted);
+  font-family: "Inter", sans-serif;
+}
+
+.breathing-widget h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  text-shadow: 0 0 10px rgba(106, 191, 143, 0.15);
 }
 
 /* Card with circle + label */
-.breathing-card{
+.breathing-card {
   width: 320px;
   height: 240px;
-  background: #ffffff;
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(20,40,30,0.06);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:20px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(106, 191, 143, 0.15);
+  border-radius: var(--radius-sm, 14px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
   padding: 18px;
   position: relative;
+  overflow: hidden;
 }
 
 /* Outer circle container */
-.breathing-circle-outer{
+.breathing-circle-outer {
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: linear-gradient(180deg, var(--primary-soft), #f7fbf9);
-  box-shadow: inset 0 4px 10px rgba(43,106,90,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1.5px dashed rgba(106, 191, 143, 0.25);
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.4);
   overflow: hidden;
 }
 
 /* Inner animated circle */
-.breathing-circle-inner{
+.breathing-circle-inner {
   width: 60%;
   height: 60%;
-  background: linear-gradient(135deg, var(--primary), #7fc9a3);
+  background: linear-gradient(135deg, var(--primary), #7eb8d4);
   border-radius: 50%;
   transform: scale(1);
   transition: transform 0.4s ease;
-  box-shadow: 0 6px 18px rgba(43,106,90,0.18);
+  box-shadow: 0 0 20px var(--primary-glow);
 }
 
-/* animation states follow phases (length controlled in JS) */
+/* animation states */
 .breathing-card.inhale .breathing-circle-inner.running {
   animation: inhale-scale linear forwards;
 }
@@ -67,71 +82,93 @@
   animation: exhale-scale linear forwards;
 }
 
-/* paused state - no animation */
+/* paused state */
 .breathing-card.paused .breathing-circle-inner {
   animation: none !important;
   transform: scale(1);
 }
 
-/* Keyframes (placeholder durations; JS controls actual timing) */
+/* Keyframes */
 @keyframes inhale-scale {
   from { transform: scale(0.6); }
-  to   { transform: scale(1.12); }
+  to   { transform: scale(1.15); }
 }
 @keyframes hold-scale {
-  from { transform: scale(1.12); }
-  to   { transform: scale(1.12); }
+  from { transform: scale(1.15); }
+  to   { transform: scale(1.15); }
 }
 @keyframes exhale-scale {
-  from { transform: scale(1.12); }
+  from { transform: scale(1.15); }
   to   { transform: scale(0.6); }
 }
 
 /* Text area next to circle */
-.breathing-text{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:6px;
+.breathing-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   margin-left: 8px;
 }
+
 .breathing-text .label {
-  font-weight: 700;
+  font-weight: 800;
   color: var(--primary);
-  font-size: 18px;
+  font-size: 1.2rem;
+  letter-spacing: -0.5px;
 }
+
 .breathing-text .counter {
-  color: var(--muted);
-  font-size: 14px;
+  color: var(--text);
+  opacity: 0.85;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 /* controls */
-.breathing-controls{
-  display:flex;
-  gap:10px;
+.breathing-controls {
+  display: flex;
+  gap: 10px;
   margin-top: 6px;
 }
-.control-btn{
+
+.control-btn {
   background: var(--primary);
-  color: white;
+  color: #0a0f0d;
   border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
   cursor: pointer;
-  font-weight:600;
+  font-weight: 700;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px var(--primary-glow);
 }
-.control-btn.muted{
-  background: transparent;
+
+.control-btn:hover {
+  background: #58b07f;
+  transform: translateY(-1px);
+}
+
+.control-btn.muted {
+  background: rgba(255, 255, 255, 0.05);
   color: var(--primary);
-  border: 1px solid var(--primary);
+  border: 1px solid rgba(106, 191, 143, 0.2);
+  box-shadow: none;
+}
+
+.control-btn.muted:hover {
+  background: rgba(106, 191, 143, 0.1);
+  border-color: var(--primary);
 }
 
 /* small descriptive text */
-.breathing-note{
-  font-size: 13px;
-  color: #7b8f86;
-  text-align:center;
+.breathing-note {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
   max-width: 420px;
+  line-height: 1.4;
 }
 
 /* responsive */
