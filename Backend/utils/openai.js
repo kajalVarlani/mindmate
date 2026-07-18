@@ -31,7 +31,7 @@ const getOpenAIAPIResponse = async (messages) => {
         ...sanitizedMessages
       ],
       temperature: 0.7,
-      max_tokens: 200
+      max_tokens: 1024
     })
   };
 
@@ -75,7 +75,7 @@ export const streamOpenAIAPIResponse = async (messages) => {
         ...sanitizedMessages
       ],
       temperature: 0.7,
-      max_tokens: 200,
+      max_tokens: 1024,
       stream: true,
     }),
   };

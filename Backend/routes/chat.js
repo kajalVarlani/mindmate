@@ -97,8 +97,10 @@ router.post("/chat", authMiddleware, async (req, res) => {
                 messages: []
             });
             thread.messages.push({ role: "user", content: message });
+            await thread.save(); // Save immediately so client can fetch it!
         } else {
             thread.messages.push({ role: "user", content: message });
+            await thread.save(); // Save immediately so client can fetch it!
         }
 
         // Set up headers for Server-Sent Events (SSE)

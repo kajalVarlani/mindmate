@@ -90,7 +90,7 @@ function App() {
     }
   }, [isAuthenticated, userRole]);
 
-  // ⭐ CENTRAL CHAT SEND FUNCTION (important architecture fix - now with real streaming)
+  // ⭐ CENTRAL CHAT SEND FUNCTION (important fix - real streaming + smooth typewriter typing speed)
   const sendMessage = async () => {
     if (!prompt.trim()) return;
 
@@ -98,6 +98,8 @@ function App() {
     setPrevChats(prev => [...prev, userMessage]);
     setPrompt("");
     setReply(""); // Initialize reply as empty string to trigger streaming state in Chat UI
+
+    let typingInterval = null;
 
     try {
       const token = localStorage.getItem("token");
@@ -124,6 +126,22 @@ function App() {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let accumulatedReply = "";
+      let displayedReply = "";
+      let queue = [];
+      let isStreamFinished = false;
+
+      // Typewriter interval (15ms is extremely smooth and calming)
+      typingInterval = setInterval(() => {
+        if (queue.length > 0) {
+          displayedReply += queue.shift();
+          setReply(displayedReply);
+        } else if (isStreamFinished) {
+          clearInterval(typingInterval);
+          setPrevChats(prev => [...prev, { role: "assistant", content: accumulatedReply }]);
+          setReply(null);
+        }
+      }, 15);
+
       let buffer = "";
 
       while (true) {
@@ -150,7 +168,7 @@ function App() {
               
               if (parsed.content) {
                 accumulatedReply += parsed.content;
-                setReply(accumulatedReply);
+                queue.push(...parsed.content.split(""));
               }
             } catch (e) {
               // ignore malformed lines
@@ -159,12 +177,10 @@ function App() {
         }
       }
 
-      if (accumulatedReply) {
-        setPrevChats(prev => [...prev, { role: "assistant", content: accumulatedReply }]);
-      }
-      setReply(null);
+      isStreamFinished = true;
 
     } catch (err) {
+      if (typingInterval) clearInterval(typingInterval);
       showToast("Couldn't send message. Please try again.", "error");
       setReply(null);
     }
@@ -232,21 +248,22 @@ function App() {
             path="/therapist/register"
             element={isAuthenticated && userRole === "user" ? <PageWrapper><TherapistRegister /></PageWrapper> : <Navigate to="/login" />}
           />
-          <Route path="/therapist/login" element={<PageWrapper><TherapistLogin /></PageWrapper>} />
+          {/* Redirect old separate login pages to unified /login */}
+          <Route path="/therapist/login" element={<Navigate to="/login" replace />} />
           <Route
             path="/therapist/dashboard"
-            element={isAuthenticated && userRole === "therapist" ? <PageWrapper><TherapistDashboard /></PageWrapper> : <Navigate to="/therapist/login" />}
+            element={isAuthenticated && userRole === "therapist" ? <PageWrapper><TherapistDashboard /></PageWrapper> : <Navigate to="/login" />}
           />
           <Route
             path="/therapist/setup"
-            element={isAuthenticated && userRole === "therapist" ? <PageWrapper><TherapistSetup /></PageWrapper> : <Navigate to="/therapist/login" />}
+            element={isAuthenticated && userRole === "therapist" ? <PageWrapper><TherapistSetup /></PageWrapper> : <Navigate to="/login" />}
           />
 
           {/* Admin Portal Routes */}
-          <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
+          <Route path="/admin/login" element={<Navigate to="/login" replace />} />
           <Route
             path="/admin"
-            element={isAuthenticated && userRole === "admin" ? <PageWrapper><AdminPanel /></PageWrapper> : <Navigate to="/admin/login" />}
+            element={isAuthenticated && userRole === "admin" ? <PageWrapper><AdminPanel /></PageWrapper> : <Navigate to="/login" />}
           />
 
           {/* Catch-all 404 Route */}
