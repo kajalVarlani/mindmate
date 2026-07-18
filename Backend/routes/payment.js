@@ -69,6 +69,7 @@ router.post("/create-order", async (req, res) => {
         amount: price,
         currency: "INR",
         mock: false,
+        keyId: process.env.RAZORPAY_KEY_ID,
       });
     } else {
       // Mock order generation for local development without keys

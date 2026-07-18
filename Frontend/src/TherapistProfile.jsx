@@ -82,7 +82,7 @@ export default function TherapistProfile() {
         slotTime: selectedSlot,
       });
 
-      const { orderId, amount, currency, mock } = orderRes.data;
+      const { orderId, amount, currency, mock, keyId } = orderRes.data;
 
       // 2. Handle payment checkout (Real vs Mock)
       if (mock) {
@@ -112,7 +112,7 @@ export default function TherapistProfile() {
         }
 
         const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_placeholder",
+          key: keyId || "rzp_test_placeholder",
           amount: amount * 100,
           currency,
           name: "MindMate",
