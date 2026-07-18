@@ -84,11 +84,11 @@ const activeStartTimers = {};
 
 const triggerPayout = async (session) => {
   try {
-    console.log(`💸 Auto-payout triggered for session: ${session._id}`);
+    console.log(`Auto-payout triggered for session: ${session._id}`);
     const therapist = await Therapist.findById(session.therapistId);
     
     if (!therapist || !therapist.bankDetails || (!therapist.bankDetails.accountNumber && !therapist.bankDetails.upiId)) {
-      console.log("⚠️ Therapist payout details missing. Payout status remains pending.");
+      console.log("Therapist payout details missing. Payout status remains pending.");
       return;
     }
 
@@ -102,9 +102,9 @@ const triggerPayout = async (session) => {
     session.payoutStatus = "paid";
     session.payoutId = `payout_mock_${Date.now()}`;
     await session.save();
-    console.log(`✅ Payout successfully recorded for session: ${session._id}`);
+    console.log(`Payout successfully recorded for session: ${session._id}`);
   } catch (err) {
-    console.error("❌ Payout failed:", err.message);
+    console.error("Payout failed:", err.message);
   }
 };
 
@@ -118,7 +118,7 @@ const handleSessionEnding = async (sessionId, roomId) => {
 
       // Emit end event to all sockets in the room
       io.to(roomId).emit("session_ended", { message: "The session time limit has been reached. Chat is locked." });
-      console.log(`🔒 Session ${sessionId} locked and marked as completed.`);
+      console.log(`Session ${sessionId} locked and marked as completed.`);
 
       // Trigger automatic therapist payout
       await triggerPayout(session);
@@ -129,14 +129,14 @@ const handleSessionEnding = async (sessionId, roomId) => {
 };
 
 io.on("connection", (socket) => {
-  console.log(`🔌 Socket connected: ${socket.id}`);
+  console.log(`Socket connected: ${socket.id}`);
 
   socket.on("join_session", async ({ sessionId, userId, role }) => {
     if (!sessionId || !userId || !role) return;
 
     const roomId = `session-${sessionId}`;
     socket.join(roomId);
-    console.log(`👤 Socket ${socket.id} (Role: ${role}, User ID: ${userId}) joined room ${roomId}`);
+    console.log(`Socket ${socket.id} (Role: ${role}, User ID: ${userId}) joined room ${roomId}`);
 
     try {
       const session = await Session.findById(sessionId);
@@ -298,7 +298,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log(`🔌 Socket disconnected: ${socket.id}`);
+    console.log(`Socket disconnected: ${socket.id}`);
   });
 });
 
@@ -309,24 +309,24 @@ const startServer = async () => {
 
   while (!connected && retries > 0) {
     try {
-      console.log(`🔌 Attempting database connection... (Retries left: ${retries})`);
+      console.log(`Attempting database connection... (Retries left: ${retries})`);
       await mongoose.connect(process.env.MONGODB_URI);
-      console.log("✅ Connected with database");
+      console.log("Connected with database");
       connected = true;
     } catch (err) {
       retries--;
-      console.error(`❌ Failed to connect with DB. Error: ${err.message}`);
+      console.error(`Failed to connect with DB. Error: ${err.message}`);
       if (retries === 0) {
-        console.error("💥 Critical: Database connection attempts exhausted. Exiting process.");
+        console.error("Critical: Database connection attempts exhausted. Exiting process.");
         process.exit(1);
       }
-      console.log("⏳ Waiting 5 seconds before retrying database connection...");
+      console.log("Waiting 5 seconds before retrying database connection...");
       await new Promise((resolve) => setTimeout(resolve, 5000));
     }
   }
 
   server.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
   });
 };
 
