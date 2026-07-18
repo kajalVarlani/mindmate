@@ -251,7 +251,7 @@ export default function AdminPanel() {
 
                       <div className="app-card-actions">
                         <a
-                          href={`${import.meta.env.VITE_API_URL || "http://localhost:8080"}${t.degreeDocUrl}`}
+                          href={getImageUrl(t.degreeDocUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="view-doc-btn"
